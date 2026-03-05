@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import Quiz from "@/components/Quiz";
 import FAQSection, { homeFaqItems } from "@/components/FAQSection";
 import BlogSection from "@/components/BlogSection";
 import AnswerBlock, { keyAnswers } from "@/components/AnswerBlock";
 import TrainingModulesSection from "@/components/TrainingModulesSection";
+import TestimonialsSection from "@/components/TestimonialsSection";
 import {
   Shield,
   FileText,
@@ -28,7 +28,7 @@ export default function Index() {
     "@type": "WebApplication",
     name: "Examen Civique - Simulateur QCM Gratuit",
     description:
-      "Simulateur gratuit pour la préparation à l'examen civique français avec questions officielles du Ministère de l'Intérieur",
+      "Examen civique 2026 gratuit QCM : entraînement en conditions réelles avec questions officielles du Ministère de l'Intérieur",
     url: "https://www.examencivique.info",
     applicationCategory: "EducationalApplication",
     operatingSystem: "All",
@@ -112,14 +112,13 @@ export default function Index() {
           {/* AEO-optimized intro paragraph - direct answer format */}
           <p className="text-lg sm:text-xl text-white/90 leading-relaxed mb-10 max-w-2xl mx-auto animate-fade-in">
             L'examen civique est un test obligatoire de <strong>40 questions QCM</strong> pour obtenir votre carte de
-            séjour en France. Score minimum : <strong>32/40 (80%)</strong>. Entraînez-vous gratuitement avec les
-            questions officielles.
+            séjour en France. Score minimum : <strong>32/40 (80%)</strong>. Exercez-vous à l'examen civique en situation réelle.
           </p>
 
           {/* Primary CTA Button */}
           <div className="animate-fade-in">
             <a
-              href="#quiz"
+              href="/entrainement"
               className="inline-flex items-center gap-3 px-8 py-4 bg-white text-primary font-bold text-lg rounded-xl shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300"
               aria-label="Commencer le test gratuit de l'examen civique"
             >
@@ -148,7 +147,7 @@ export default function Index() {
             </div>
             <div className="p-4 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20">
               <Award className="w-6 h-6 mx-auto mb-2" />
-              <span className="block text-3xl font-bold">140+</span>
+              <span className="block text-3xl font-bold">1800+</span>
               <span className="text-sm text-white/80">Questions officielles</span>
             </div>
           </div>
@@ -159,17 +158,24 @@ export default function Index() {
         {/* TRAINING MODULES SECTION - Right after hero */}
         <TrainingModulesSection />
 
-        {/* QUIZ SECTION */}
-        <section
-          id="quiz"
-          className="seo-section bg-gradient-to-b from-background to-muted/30"
-          aria-labelledby="quiz-heading"
-        >
-          <div className="container-wide">
-            <h2 id="quiz-heading" className="text-2xl sm:text-3xl font-bold text-center mb-8">
-              Simulateur de Test Civique
+        <TestimonialsSection />
+
+        {/* TRAINING CTA SECTION */}
+        <section className="seo-section bg-gradient-to-b from-background to-muted/30" aria-labelledby="quiz-heading">
+          <div className="container-wide text-center">
+            <h2 id="quiz-heading" className="text-2xl sm:text-3xl font-bold mb-4">
+              Préparez-vous à l'examen civique comme si vous y étiez.
             </h2>
-            <Quiz />
+            <p className="text-muted-foreground max-w-2xl mx-auto mb-6">
+              Testez vos connaissances dans des conditions identiques à l'examen civique.
+            </p>
+            <a
+              href="/entrainement"
+              className="inline-flex items-center gap-3 px-8 py-4 bg-primary text-primary-foreground font-bold rounded-xl hover:bg-primary/90 transition-colors shadow-lg"
+            >
+              Commencer le test gratuit
+              <ArrowRight className="w-5 h-5" />
+            </a>
           </div>
         </section>
 
@@ -216,7 +222,7 @@ export default function Index() {
                   <Link href="/questions">Liste complète des questions 2025</Link>
                 </h3>
                 <p className="text-sm text-muted-foreground mb-4">
-                  140+ questions officielles avec réponses organisées par les 5 thématiques
+                  1800+ questions officielles avec réponses organisées par les 5 thématiques
                 </p>
                 <Link href="/questions" className="inline-flex items-center gap-1 text-sm text-primary font-medium">
                   Consulter <ArrowRight className="w-4 h-4" />
@@ -405,7 +411,7 @@ export default function Index() {
                 <article>
                   <h3 className="text-xl font-semibold text-foreground mb-3">Comment bien se préparer ?</h3>
                   <p className="leading-relaxed">
-                    La préparation à l'examen civique nécessite une révision méthodique des 140+ questions officielles
+                    La préparation à l'examen civique nécessite une révision méthodique des 1800+ questions officielles
                     publiées par le Ministère de l'Intérieur. Notre simulateur gratuit reproduit les conditions réelles
                     de l'examen avec des questions aléatoires à chaque session. Nous vous recommandons de vous entraîner
                     régulièrement, idéalement 15 à 20 minutes par jour, pendant les deux semaines précédant votre
@@ -478,7 +484,7 @@ export default function Index() {
         <section className="seo-section bg-primary text-primary-foreground" aria-labelledby="cta-heading">
           <div className="container-narrow text-center">
             <h2 id="cta-heading" className="text-2xl sm:text-3xl font-bold mb-4">
-              Prêt à réussir votre examen civique ?
+              Mettez-vous en condition réelle pour réussir l'examen civique
             </h2>
             <p className="text-white/90 mb-8 max-w-xl mx-auto">
               Notre simulateur gratuit utilise les questions officielles du Ministère de l'Intérieur. Entraînez-vous
@@ -486,7 +492,7 @@ export default function Index() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
-                href="#quiz"
+                href="/entrainement"
                 className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-primary font-bold rounded-xl hover:bg-white/90 transition-colors"
               >
                 <Target className="w-5 h-5" />

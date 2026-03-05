@@ -1,11 +1,12 @@
 import IndexPage from "@/app-pages/Index";
 
 export const metadata = {
-  title: "Examen Civique 2026 : Test et 40 Questions Officielles (Gratuit)",
+  title: "Examen civique 2026 gratuit QCM : Test et 40 Questions Officielles",
   description:
-    "Entraînez-vous avec le simulateur gratuit pour l'examen civique 2026. 40 questions officielles de l'OFII et téléchargement du livret citoyen PDF.",
+    "Examen civique 2026 gratuit QCM : entraînement en conditions réelles, 40 questions officielles de l'OFII, score minimum 32/40.",
   keywords: [
     "examen civique",
+    "examen civique 2026 gratuit QCM",
     "préparation examen civique",
     "test ofii",
     "qcm examen civique",
@@ -20,13 +21,13 @@ export const metadata = {
     canonical: "https://www.examencivique.info",
   },
   openGraph: {
-    title: "Examen Civique 2026 : Test QCM Gratuit",
-    description: "Simulateur gratuit avec 40 questions officielles OFII. Score 32/40 requis.",
+    title: "Examen civique 2026 gratuit QCM : Test Officiel",
+    description: "Entraînement en conditions réelles avec 40 questions officielles OFII. Score 32/40 requis.",
     url: "https://www.examencivique.info",
   },
   twitter: {
-    title: "Examen Civique 2026 : Test QCM Gratuit",
-    description: "Simulateur gratuit avec 40 questions officielles OFII.",
+    title: "Examen civique 2026 gratuit QCM",
+    description: "40 questions officielles, 45 minutes, score minimum 32/40.",
   },
 };
 

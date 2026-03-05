@@ -7,9 +7,9 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 
 const siteUrl = "https://www.examencivique.info";
 const siteName = "ExamenCivique.info";
-const defaultTitle = "Examen Civique 2026 : Test et 40 Questions Officielles (Gratuit)";
+const defaultTitle = "Examen civique 2026 gratuit QCM : Test et 40 Questions Officielles";
 const defaultDescription =
-  "Entraînez-vous avec le simulateur gratuit pour l'examen civique 2026. 40 questions officielles de l'OFII et téléchargement du livret citoyen PDF.";
+  "Examen civique 2026 gratuit QCM : entraînement en conditions réelles, 40 questions officielles de l'OFII et score minimum 32/40.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -18,6 +18,13 @@ export const metadata: Metadata = {
     template: `%s | ${siteName}`,
   },
   description: defaultDescription,
+  icons: {
+    icon: "/logo.png",
+    apple: "/logo.png",
+  },
+  alternates: {
+    canonical: siteUrl,
+  },
   robots: {
     index: true,
     follow: true,
@@ -35,12 +42,21 @@ export const metadata: Metadata = {
     url: siteUrl,
     title: defaultTitle,
     description: defaultDescription,
+    images: [
+      {
+        url: "/logo.png",
+        width: 180,
+        height: 54,
+        alt: siteName,
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     site: "@qcmcivique",
     title: defaultTitle,
     description: defaultDescription,
+    images: ["/logo.png"],
   },
 };
 
@@ -55,7 +71,7 @@ export default function RootLayout({
         <Providers>
           <Header />
           <Breadcrumbs />
-          <main className="flex-1">{children}</main>
+          <main className="flex-1 pb-24 lg:pb-0">{children}</main>
           <Footer />
         </Providers>
       </body>

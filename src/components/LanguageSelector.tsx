@@ -1,7 +1,7 @@
 "use client";
 
 import { useLanguage } from '@/i18n/LanguageContext';
-import { languages, Language } from '@/i18n/translations';
+import { languages } from '@/i18n/translations';
 import { Globe } from 'lucide-react';
 import {
   DropdownMenu,
@@ -14,14 +14,11 @@ import { Button } from '@/components/ui/button';
 export default function LanguageSelector() {
   const { language, setLanguage } = useLanguage();
 
-  const currentLang = languages.find(l => l.code === language);
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="sm" className="gap-2">
+        <Button variant="ghost" size="sm" className="gap-2" aria-label="Langue">
           <Globe className="w-4 h-4" />
-          <span className="hidden sm:inline">{currentLang?.nativeName}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">

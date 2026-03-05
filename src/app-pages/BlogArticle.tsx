@@ -7,9 +7,11 @@ import { Calendar, Clock, ArrowLeft, ArrowRight, Share2, BookOpen } from "lucide
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 export default function BlogArticle({ slug }: { slug: string }) {
   const { t } = useLanguage();
+  const { toast } = useToast();
   
   const article = getArticleBySlug(slug);
   const relatedArticles = getRelatedArticles(slug, 3);
@@ -35,16 +37,33 @@ export default function BlogArticle({ slug }: { slug: string }) {
   };
 
   const handleShare = async () => {
+    const shareUrl = window.location.href;
+
     if (navigator.share) {
       try {
         await navigator.share({
           title: article.title,
           text: article.excerpt,
-          url: window.location.href,
+          url: shareUrl,
         });
-      } catch (err) {
-        console.log('Share cancelled');
+        return;
+      } catch {
+        // fallback to clipboard
       }
+    }
+
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      toast({
+        title: "Lien copié",
+        description: "Le lien de l'article a été copié dans le presse-papiers.",
+      });
+    } catch {
+      toast({
+        title: "Partage indisponible",
+        description: "Copiez l'URL manuellement depuis la barre d'adresse.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -237,7 +256,7 @@ export default function BlogArticle({ slug }: { slug: string }) {
               Testez vos connaissances avec notre simulateur gratuit
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Link href="/#quiz">
+              <Link href="/entrainement">
                 <Button className="gap-2">
                   Simulateur gratuit
                   <ArrowRight className="w-4 h-4" />

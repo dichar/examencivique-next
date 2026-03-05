@@ -24,7 +24,7 @@ export default function Guide() {
       {
         "@type": "HowToStep",
         "name": "Réviser les questions officielles",
-        "text": "Étudiez les 140+ questions publiées par le Ministère de l'Intérieur"
+        "text": "Étudiez les 1800+ questions publiées par le Ministère de l'Intérieur"
       },
       {
         "@type": "HowToStep",

@@ -1,12 +1,14 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Question, selectExamQuestions, themeColors, themeShortNames, PASSING_SCORE, TOTAL_QUESTIONS, EXAM_DURATION_MINUTES } from "@/lib/questions";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { CheckCircle2, XCircle, RotateCcw, Trophy, Target, ArrowRight, ChevronLeft, ChevronRight, Clock, AlertTriangle, Timer } from "lucide-react";
 import confetti from "canvas-confetti";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { supabase } from "@/lib/supabase/client";
+import { useAuth } from "@/components/AuthProvider";
 
 type ExamState = "intro" | "playing" | "review" | "results" | "timeUp";
 
@@ -23,6 +25,9 @@ export default function TimedExam() {
   const [answers, setAnswers] = useState<Record<number, AnswerState>>({});
   const [score, setScore] = useState(0);
   const [timeLeft, setTimeLeft] = useState(EXAM_DURATION_MINUTES * 60);
+  const endTimeRef = useRef<number | null>(null);
+  const resultStoredRef = useRef(false);
+  const { user } = useAuth();
 
   const initExam = useCallback(() => {
     const selected = selectExamQuestions();
@@ -31,32 +36,37 @@ export default function TimedExam() {
     setAnswers({});
     setScore(0);
     setTimeLeft(EXAM_DURATION_MINUTES * 60);
+    endTimeRef.current = Date.now() + EXAM_DURATION_MINUTES * 60 * 1000;
+    resultStoredRef.current = false;
     setState("playing");
+  }, []);
+
+  const computeScore = useCallback((answersMap: Record<number, AnswerState>) => {
+    return Object.values(answersMap).filter(a => a.isCorrect).length;
   }, []);
 
   // Timer countdown
   useEffect(() => {
     if (state !== "playing") return;
+    if (!endTimeRef.current) {
+      endTimeRef.current = Date.now() + EXAM_DURATION_MINUTES * 60 * 1000;
+    }
 
     const timer = setInterval(() => {
-      setTimeLeft(prev => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          // Calculate final score
-          let finalScore = 0;
-          Object.values(answers).forEach(a => {
-            if (a.isCorrect) finalScore++;
-          });
-          setScore(finalScore);
-          setState("timeUp");
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
+      const remainingMs = Math.max(0, endTimeRef.current! - Date.now());
+      const remainingSeconds = Math.ceil(remainingMs / 1000);
+      setTimeLeft(remainingSeconds);
+
+      if (remainingSeconds <= 0) {
+        clearInterval(timer);
+        const finalScore = computeScore(answers);
+        setScore(finalScore);
+        setState("timeUp");
+      }
+    }, 500);
 
     return () => clearInterval(timer);
-  }, [state, answers]);
+  }, [state, answers, computeScore]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -86,20 +96,10 @@ export default function TimedExam() {
     if (currentIndex < TOTAL_QUESTIONS - 1) {
       setCurrentIndex(prev => prev + 1);
     } else {
-      // Calculate final score
-      let finalScore = 0;
-      const updatedAnswers = { ...answers };
-      if (currentAnswer?.isCorrect) finalScore++;
-      Object.values(updatedAnswers).forEach(a => {
-        if (a.isCorrect) finalScore++;
-      });
-      // Subtract 1 to avoid double counting current answer
-      finalScore = Object.values(answers).filter(a => a.isCorrect).length;
-      if (currentAnswer?.isCorrect) finalScore = Object.values({ ...answers, [currentIndex]: currentAnswer }).filter(a => a.isCorrect).length;
-      
-      setScore(Object.values({ ...answers }).filter(a => a.isCorrect).length);
+      const finalScore = computeScore(answers);
+      setScore(finalScore);
       setState("results");
-      if (Object.values(answers).filter(a => a.isCorrect).length >= PASSING_SCORE) {
+      if (finalScore >= PASSING_SCORE) {
         confetti({
           particleCount: 100,
           spread: 70,
@@ -115,8 +115,10 @@ export default function TimedExam() {
     }
   };
 
-  const finalScore = Object.values(answers).filter(a => a.isCorrect).length;
+  const finalScore = computeScore(answers);
   const isPassed = finalScore >= PASSING_SCORE;
+  const answeredCount = Object.values(answers).filter(a => a.selectedAnswer).length;
+  const remainingCount = TOTAL_QUESTIONS - answeredCount;
 
   // Time warning colors
   const getTimeColor = () => {
@@ -124,6 +126,23 @@ export default function TimedExam() {
     if (timeLeft <= 300) return "text-amber-500";
     return "text-primary";
   };
+
+  useEffect(() => {
+    if ((state !== "results" && state !== "timeUp") || !user || resultStoredRef.current) return;
+
+    resultStoredRef.current = true;
+
+    const persistResult = async () => {
+      await supabase.from("quiz_results").insert({
+        user_id: user.id,
+        score: finalScore,
+        total_questions: TOTAL_QUESTIONS,
+        passed: finalScore >= PASSING_SCORE,
+      });
+    };
+
+    persistResult();
+  }, [state, user, finalScore]);
 
   if (state === "intro") {
     return (
@@ -354,6 +373,22 @@ export default function TimedExam() {
             )}
             style={{ width: `${(timeLeft / (EXAM_DURATION_MINUTES * 60)) * 100}%` }}
           />
+        </div>
+      </div>
+
+      {/* Progress Dashboard */}
+      <div className="mb-4 grid grid-cols-2 sm:grid-cols-3 gap-3">
+        <div className="p-4 rounded-xl border bg-card text-center">
+          <div className="text-xs text-muted-foreground">Progression</div>
+          <div className="text-lg font-bold">{answeredCount}/{TOTAL_QUESTIONS}</div>
+        </div>
+        <div className="p-4 rounded-xl border bg-card text-center">
+          <div className="text-xs text-muted-foreground">Bonnes réponses</div>
+          <div className="text-lg font-bold text-primary">{finalScore}</div>
+        </div>
+        <div className="p-4 rounded-xl border bg-card text-center hidden sm:block">
+          <div className="text-xs text-muted-foreground">Restantes</div>
+          <div className="text-lg font-bold">{remainingCount}</div>
         </div>
       </div>
 

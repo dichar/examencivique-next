@@ -58,7 +58,7 @@ export const homeFaqItems: FAQItem[] = [
   },
   {
     question: "Comment se préparer efficacement à l'examen civique ?",
-    answer: "La meilleure préparation est de s'entraîner avec les questions officielles. Notre simulateur gratuit reproduit les conditions réelles de l'examen avec les 140+ questions publiées par le Ministère de l'Intérieur, réparties selon les quotas officiels.",
+    answer: "La meilleure préparation est de s'entraîner avec les questions officielles. Notre simulateur gratuit reproduit les conditions réelles de l'examen avec les 1800+ questions publiées par le Ministère de l'Intérieur, réparties selon les quotas officiels.",
   },
   {
     question: "Les questions de l'examen civique changent-elles ?",

@@ -1,5 +1,7 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Shield, FileText, BookOpen, HelpCircle, Scale, Heart, History, Facebook, Twitter, Instagram, Youtube, Linkedin } from "lucide-react";
+import { SUPPORT_EMAIL } from "@/lib/constants";
 
 export default function Footer() {
   return (
@@ -12,18 +14,24 @@ export default function Footer() {
           {/* Brand */}
           <div className="space-y-4">
             <Link href="/" className="flex items-center gap-3">
-              <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary text-primary-foreground">
-                <Shield className="w-5 h-5" />
-              </div>
-              <div>
-                <span className="font-bold text-lg">Examen Civique</span>
-                <span className="block text-xs text-background/60">.info</span>
-              </div>
+              <Image
+                src="/logo.png"
+                alt="Examen Civique"
+                width={180}
+                height={54}
+                className="h-9 w-auto"
+              />
+              <span className="sr-only">Examen Civique</span>
             </Link>
             <p className="text-sm text-background/70 leading-relaxed">
-              Entraînez-vous gratuitement à l'examen civique français avec des questions 
-              officielles du Ministère de l'Intérieur.
+              Répétez l'examen civique dans un environnement réaliste. Questions officielles du Ministère de l'Intérieur.
             </p>
+            <a
+              href={`mailto:${SUPPORT_EMAIL}`}
+              className="text-sm text-background/80 hover:text-background underline underline-offset-2"
+            >
+              Support : {SUPPORT_EMAIL}
+            </a>
             <div className="official-badge !bg-primary/20 !text-background">
               <Shield className="w-4 h-4" />
               Questions 100% officielles

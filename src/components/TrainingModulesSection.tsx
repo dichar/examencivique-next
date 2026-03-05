@@ -42,8 +42,8 @@ const modules = [
 const advantages = [
   {
     icon: Target,
-    title: "Simulateur Réel",
-    description: "Sessions de 40 questions en 45 minutes, exactement comme le jour J",
+    title: "Conditions réelles",
+    description: "Testez vos connaissances dans des conditions identiques à l'examen civique.",
   },
   {
     icon: CheckCircle2,

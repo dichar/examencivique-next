@@ -1,11 +1,16 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
+import Link from "next/link";
 import { Question, selectExamQuestions, themeColors, themeShortNames, PASSING_SCORE, TOTAL_QUESTIONS } from "@/lib/questions";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import { SUPPORT_EMAIL } from "@/lib/constants";
 import { CheckCircle2, XCircle, RotateCcw, Trophy, Target, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import confetti from "canvas-confetti";
+import { supabase } from "@/lib/supabase/client";
+import { useAuth } from "@/components/AuthProvider";
 
 type QuizState = "intro" | "playing" | "review" | "results";
 
@@ -21,6 +26,13 @@ export default function Quiz() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<number, AnswerState>>({});
   const [score, setScore] = useState(0);
+  const [showSignupPrompt, setShowSignupPrompt] = useState(false);
+  const resultsRecordedRef = useRef(false);
+  const resultStoredRef = useRef(false);
+  const { user } = useAuth();
+
+  const QUIZ_COUNT_KEY = "examencivique.quizCount";
+  const SIGNUP_PROMPT_DISMISSED_KEY = "examencivique.signupPromptDismissed";
 
   const initQuiz = useCallback(() => {
     const selected = selectExamQuestions();
@@ -28,12 +40,17 @@ export default function Quiz() {
     setCurrentIndex(0);
     setAnswers({});
     setScore(0);
+    setShowSignupPrompt(false);
+    resultsRecordedRef.current = false;
+    resultStoredRef.current = false;
     setState("playing");
   }, []);
 
   const currentQuestion = questions[currentIndex];
   const currentAnswer = answers[currentIndex];
   const progress = ((currentIndex + 1) / TOTAL_QUESTIONS) * 100;
+  const answeredCount = Object.values(answers).filter(a => a.selectedAnswer).length;
+  const remainingCount = TOTAL_QUESTIONS - answeredCount;
 
   const handleSelectAnswer = (answer: string) => {
     if (currentAnswer?.selectedAnswer) return;
@@ -77,13 +94,60 @@ export default function Quiz() {
 
   const isPassed = score >= PASSING_SCORE;
 
+  const dismissSignupPrompt = useCallback(() => {
+    setShowSignupPrompt(false);
+    try {
+      localStorage.setItem(SIGNUP_PROMPT_DISMISSED_KEY, "true");
+    } catch {
+      // ignore storage failures (private mode, disabled storage)
+    }
+  }, []);
+
+  useEffect(() => {
+    if (state !== "results" || resultsRecordedRef.current || user) return;
+
+    resultsRecordedRef.current = true;
+
+    try {
+      const raw = localStorage.getItem(QUIZ_COUNT_KEY);
+      const count = Number.parseInt(raw || "0", 10);
+      const nextCount = Number.isFinite(count) ? count + 1 : 1;
+      localStorage.setItem(QUIZ_COUNT_KEY, String(nextCount));
+
+      const dismissed = localStorage.getItem(SIGNUP_PROMPT_DISMISSED_KEY) === "true";
+      if (nextCount >= 2 && !dismissed) {
+        setShowSignupPrompt(true);
+      }
+    } catch {
+      // ignore storage failures (private mode, disabled storage)
+    }
+  }, [state, user]);
+
+  useEffect(() => {
+    if (state !== "results" || !user || resultStoredRef.current) return;
+
+    resultStoredRef.current = true;
+
+    const persistResult = async () => {
+      const passed = score >= PASSING_SCORE;
+      await supabase.from("quiz_results").insert({
+        user_id: user.id,
+        score,
+        total_questions: TOTAL_QUESTIONS,
+        passed,
+      });
+    };
+
+    persistResult();
+  }, [state, user, score]);
+
   if (state === "intro") {
     return (
       <div className="question-card p-8 text-center max-w-2xl mx-auto animate-scale-in">
         <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
           <Target className="w-8 h-8 text-primary" />
         </div>
-        <h2 className="text-2xl font-bold mb-4">Simulateur d'Examen Civique</h2>
+        <h2 className="text-2xl font-bold mb-4">Entraînez-vous à l'examen civique dans des conditions réelles.</h2>
         <p className="text-muted-foreground mb-6 leading-relaxed">
           Cet examen contient <strong>40 questions</strong> réparties selon les thématiques officielles. 
           Vous devez obtenir au moins <strong>32 bonnes réponses (80%)</strong> pour réussir.
@@ -120,56 +184,83 @@ export default function Quiz() {
 
   if (state === "results") {
     return (
-      <div className="question-card p-8 text-center max-w-2xl mx-auto animate-scale-in">
-        <div className={cn(
-          "w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6",
-          isPassed ? "bg-success/10" : "bg-destructive/10"
-        )}>
-          {isPassed ? (
-            <Trophy className="w-10 h-10 text-success" />
-          ) : (
-            <XCircle className="w-10 h-10 text-destructive" />
-          )}
-        </div>
-        
-        <h2 className="text-2xl font-bold mb-2">
-          {isPassed ? "Félicitations !" : "Continuez vos révisions"}
-        </h2>
-        
-        <p className="text-muted-foreground mb-6">
-          {isPassed 
-            ? "Vous avez réussi l'examen civique !"
-            : "Vous n'avez pas atteint le score minimum de 32/40."}
-        </p>
-
-        <div className={cn(
-          "inline-flex items-center gap-2 px-6 py-3 rounded-full text-xl font-bold mb-8",
-          isPassed ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive"
-        )}>
-          {score} / {TOTAL_QUESTIONS}
-        </div>
-
-        <div className="grid grid-cols-2 gap-4 mb-8 text-sm">
-          <div className="p-4 bg-success/10 rounded-lg">
-            <CheckCircle2 className="w-5 h-5 text-success mx-auto mb-1" />
-            <span className="font-semibold text-success">{score} bonnes</span>
+      <>
+        <div className="question-card p-8 text-center max-w-2xl mx-auto animate-scale-in">
+          <div className={cn(
+            "w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6",
+            isPassed ? "bg-success/10" : "bg-destructive/10"
+          )}>
+            {isPassed ? (
+              <Trophy className="w-10 h-10 text-success" />
+            ) : (
+              <XCircle className="w-10 h-10 text-destructive" />
+            )}
           </div>
-          <div className="p-4 bg-destructive/10 rounded-lg">
-            <XCircle className="w-5 h-5 text-destructive mx-auto mb-1" />
-            <span className="font-semibold text-destructive">{TOTAL_QUESTIONS - score} erreurs</span>
+          
+          <h2 className="text-2xl font-bold mb-2">
+            {isPassed ? "Félicitations !" : "Continuez vos révisions"}
+          </h2>
+          
+          <p className="text-muted-foreground mb-6">
+            {isPassed 
+              ? "Vous avez réussi l'examen civique !"
+              : "Vous n'avez pas atteint le score minimum de 32/40."}
+          </p>
+
+          <div className={cn(
+            "inline-flex items-center gap-2 px-6 py-3 rounded-full text-xl font-bold mb-8",
+            isPassed ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive"
+          )}>
+            {score} / {TOTAL_QUESTIONS}
+          </div>
+
+          <div className="grid grid-cols-2 gap-4 mb-8 text-sm">
+            <div className="p-4 bg-success/10 rounded-lg">
+              <CheckCircle2 className="w-5 h-5 text-success mx-auto mb-1" />
+              <span className="font-semibold text-success">{score} bonnes</span>
+            </div>
+            <div className="p-4 bg-destructive/10 rounded-lg">
+              <XCircle className="w-5 h-5 text-destructive mx-auto mb-1" />
+              <span className="font-semibold text-destructive">{TOTAL_QUESTIONS - score} erreurs</span>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Button onClick={() => setState("review")} variant="outline" className="gap-2">
+              Voir les réponses
+            </Button>
+            <Button onClick={initQuiz} className="gap-2">
+              <RotateCcw className="w-4 h-4" />
+              Recommencer
+            </Button>
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <Button onClick={() => setState("review")} variant="outline" className="gap-2">
-            Voir les réponses
-          </Button>
-          <Button onClick={initQuiz} className="gap-2">
-            <RotateCcw className="w-4 h-4" />
-            Recommencer
-          </Button>
-        </div>
-      </div>
+        <Dialog open={showSignupPrompt} onOpenChange={(open) => !open && dismissSignupPrompt()}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Inscription gratuite</DialogTitle>
+              <DialogDescription>
+                Vous avez terminé 2 quiz. Inscrivez-vous pour sauvegarder vos résultats et accéder à plus d'entraînements.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="rounded-lg border border-primary/20 bg-primary/5 p-3 text-sm">
+              Support :{" "}
+              <Link href={`mailto:${SUPPORT_EMAIL}`} className="font-medium text-primary underline underline-offset-2">
+                {SUPPORT_EMAIL}
+              </Link>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={dismissSignupPrompt}>
+                Plus tard
+              </Button>
+              <Button asChild onClick={dismissSignupPrompt}>
+                <Link href="/inscription">S'inscrire</Link>
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </>
     );
   }
 
@@ -245,6 +336,22 @@ export default function Quiz() {
 
   return (
     <div className="max-w-2xl mx-auto">
+      {/* Progress Dashboard */}
+      <div className="mb-4 grid grid-cols-2 sm:grid-cols-3 gap-3">
+        <div className="p-4 rounded-xl border bg-card text-center">
+          <div className="text-xs text-muted-foreground">Progression</div>
+          <div className="text-lg font-bold">{answeredCount}/{TOTAL_QUESTIONS}</div>
+        </div>
+        <div className="p-4 rounded-xl border bg-card text-center">
+          <div className="text-xs text-muted-foreground">Bonnes réponses</div>
+          <div className="text-lg font-bold text-primary">{score}</div>
+        </div>
+        <div className="p-4 rounded-xl border bg-card text-center hidden sm:block">
+          <div className="text-xs text-muted-foreground">Restantes</div>
+          <div className="text-lg font-bold">{remainingCount}</div>
+        </div>
+      </div>
+
       {/* Progress */}
       <div className="mb-6">
         <div className="flex items-center justify-between mb-2 text-sm">

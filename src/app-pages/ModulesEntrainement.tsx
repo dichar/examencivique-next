@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Breadcrumbs from "@/components/Breadcrumbs";
 import TrainingModulesSection from "@/components/TrainingModulesSection";
 import { ArrowRight, FileText, Target } from "lucide-react";
 
@@ -26,8 +25,6 @@ export default function ModulesEntrainement() {
     <>
       
 
-      <Breadcrumbs />
-      
       <div className="bg-gradient-to-b from-primary via-primary to-primary/90 text-primary-foreground py-12">
         <div className="container-wide">
           <h1 className="text-3xl sm:text-4xl font-bold mb-4">
@@ -59,7 +56,7 @@ export default function ModulesEntrainement() {
                   Toutes les Questions
                 </h3>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Consultez la liste complète des 140+ questions officielles
+                  Consultez la liste complète des 1800+ questions officielles
                 </p>
                 <span className="inline-flex items-center gap-1 text-sm text-primary font-medium">
                   Voir les questions <ArrowRight className="w-4 h-4" />

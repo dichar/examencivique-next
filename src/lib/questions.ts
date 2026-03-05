@@ -85,8 +85,11 @@ export function selectExamQuestions(): Question[] {
     selectedQuestions.push(...selected);
   }
   
-  // Final shuffle to mix themes
-  return shuffleArray(selectedQuestions);
+  // Final shuffle to mix themes + shuffle options for each question
+  return shuffleArray(selectedQuestions).map((question) => ({
+    ...question,
+    options: shuffleArray(question.options),
+  }));
 }
 
 export function getQuestionsByTheme(): Record<string, Question[]> {
