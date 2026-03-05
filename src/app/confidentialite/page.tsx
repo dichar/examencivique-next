@@ -1,6 +1,9 @@
 export const metadata = {
   title: "Politique de confidentialité",
   description: "Politique de confidentialité d'ExamenCivique.info.",
+  alternates: {
+    canonical: "https://www.examencivique.info/confidentialite",
+  },
 };
 
 export default function ConfidentialitePage() {

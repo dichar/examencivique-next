@@ -4,13 +4,13 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { Question, selectExamQuestions, themeColors, themeShortNames, PASSING_SCORE, TOTAL_QUESTIONS, EXAM_DURATION_MINUTES } from "@/lib/questions";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { CheckCircle2, XCircle, RotateCcw, Trophy, Target, ArrowRight, ChevronLeft, ChevronRight, Clock, AlertTriangle, Timer } from "lucide-react";
+import { CheckCircle2, XCircle, RotateCcw, Trophy, ArrowRight, ChevronLeft, ChevronRight, Clock, Timer } from "lucide-react";
 import confetti from "canvas-confetti";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { supabase } from "@/lib/supabase/client";
 import { useAuth } from "@/components/AuthProvider";
 
-type ExamState = "intro" | "playing" | "review" | "results" | "timeUp";
+type ExamState = "playing" | "review" | "results" | "timeUp";
 
 interface AnswerState {
   selectedAnswer: string | null;
@@ -19,8 +19,8 @@ interface AnswerState {
 
 export default function TimedExam() {
   const { t } = useLanguage();
-  const [state, setState] = useState<ExamState>("intro");
-  const [questions, setQuestions] = useState<Question[]>([]);
+  const [state, setState] = useState<ExamState>("playing");
+  const [questions, setQuestions] = useState<Question[]>(() => selectExamQuestions());
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<number, AnswerState>>({});
   const [score, setScore] = useState(0);
@@ -40,6 +40,8 @@ export default function TimedExam() {
     resultStoredRef.current = false;
     setState("playing");
   }, []);
+
+  // questions are initialized synchronously to avoid a blank render
 
   const computeScore = useCallback((answersMap: Record<number, AnswerState>) => {
     return Object.values(answersMap).filter(a => a.isCorrect).length;
@@ -144,44 +146,8 @@ export default function TimedExam() {
     persistResult();
   }, [state, user, finalScore]);
 
-  if (state === "intro") {
-    return (
-      <div className="question-card p-8 text-center max-w-2xl mx-auto animate-scale-in">
-        <div className="w-16 h-16 rounded-full bg-amber-500/10 flex items-center justify-center mx-auto mb-6">
-          <Timer className="w-8 h-8 text-amber-500" />
-        </div>
-        <h2 className="text-2xl font-bold mb-2">{t('exam.title')}</h2>
-        <p className="text-primary font-medium mb-4">{t('exam.subtitle')}</p>
-        <p className="text-muted-foreground mb-6 leading-relaxed">
-          {t('exam.description')}
-        </p>
-        
-        <div className="grid grid-cols-2 gap-4 mb-6">
-          <div className="p-4 bg-muted rounded-lg">
-            <Target className="w-6 h-6 text-primary mx-auto mb-2" />
-            <span className="block text-2xl font-bold">40</span>
-            <span className="text-sm text-muted-foreground">Questions</span>
-          </div>
-          <div className="p-4 bg-muted rounded-lg">
-            <Clock className="w-6 h-6 text-amber-500 mx-auto mb-2" />
-            <span className="block text-2xl font-bold">45</span>
-            <span className="text-sm text-muted-foreground">Minutes</span>
-          </div>
-        </div>
-
-        <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg mb-6">
-          <div className="flex items-center gap-2 text-amber-700">
-            <AlertTriangle className="w-5 h-5" />
-            <span className="font-medium">{t('exam.warning')}</span>
-          </div>
-        </div>
-
-        <Button onClick={initExam} size="lg" className="gap-2 bg-amber-500 hover:bg-amber-600">
-          {t('exam.start')}
-          <ArrowRight className="w-4 h-4" />
-        </Button>
-      </div>
-    );
+  if (questions.length === 0) {
+    return null;
   }
 
   if (state === "timeUp") {

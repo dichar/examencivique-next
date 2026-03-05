@@ -1,7 +1,9 @@
 "use client";
 
-import TimedExam from "@/components/TimedExam";
+import dynamic from "next/dynamic";
 import { useLanguage } from "@/i18n/LanguageContext";
+
+const TimedExam = dynamic(() => import("@/components/TimedExam"), { ssr: false, loading: () => null });
 
 export default function ExamenChronometrePage() {
   const { t } = useLanguage();

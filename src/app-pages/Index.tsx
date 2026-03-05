@@ -115,15 +115,23 @@ export default function Index() {
             séjour en France. Score minimum : <strong>32/40 (80%)</strong>. Exercez-vous à l'examen civique en situation réelle.
           </p>
 
-          {/* Primary CTA Button */}
-          <div className="animate-fade-in">
+          {/* Primary CTA Buttons */}
+          <div className="animate-fade-in flex flex-col sm:flex-row items-center justify-center gap-3">
             <a
-              href="/entrainement"
-              className="inline-flex items-center gap-3 px-8 py-4 bg-white text-primary font-bold text-lg rounded-xl shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300"
-              aria-label="Commencer le test gratuit de l'examen civique"
+              href="/entrainement?mode=training&start=1"
+              className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-white text-primary font-bold text-lg rounded-xl shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 w-full sm:w-auto"
+              aria-label="Commencer l'entraînement à l'examen civique"
             >
               <Target className="w-6 h-6" />
-              Commencer le test gratuit
+              Commencer l'entraînement
+            </a>
+            <a
+              href="/examen-chronometre?start=1"
+              className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-amber-400 text-primary font-bold text-lg rounded-xl shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 w-full sm:w-auto"
+              aria-label="Passer l'examen civique chronométré de 45 minutes"
+            >
+              <Clock className="w-6 h-6" />
+              Examen 45 min
               <ArrowRight className="w-5 h-5" />
             </a>
           </div>
@@ -169,13 +177,22 @@ export default function Index() {
             <p className="text-muted-foreground max-w-2xl mx-auto mb-6">
               Testez vos connaissances dans des conditions identiques à l'examen civique.
             </p>
-            <a
-              href="/entrainement"
-              className="inline-flex items-center gap-3 px-8 py-4 bg-primary text-primary-foreground font-bold rounded-xl hover:bg-primary/90 transition-colors shadow-lg"
-            >
-              Commencer le test gratuit
-              <ArrowRight className="w-5 h-5" />
-            </a>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+              <a
+                href="/entrainement?mode=training&start=1"
+                className="inline-flex items-center gap-3 px-8 py-4 bg-primary text-primary-foreground font-bold rounded-xl hover:bg-primary/90 transition-colors shadow-lg w-full sm:w-auto"
+              >
+                Commencer l'entraînement
+                <ArrowRight className="w-5 h-5" />
+              </a>
+              <a
+                href="/examen-chronometre?start=1"
+                className="inline-flex items-center gap-3 px-8 py-4 bg-amber-500 text-primary-foreground font-bold rounded-xl hover:bg-amber-600 transition-colors shadow-lg w-full sm:w-auto"
+              >
+                Examen 45 min
+                <ArrowRight className="w-5 h-5" />
+              </a>
+            </div>
           </div>
         </section>
 

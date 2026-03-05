@@ -7,12 +7,12 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { SUPPORT_EMAIL } from "@/lib/constants";
-import { CheckCircle2, XCircle, RotateCcw, Trophy, Target, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { CheckCircle2, XCircle, RotateCcw, Trophy, ChevronLeft, ChevronRight } from "lucide-react";
 import confetti from "canvas-confetti";
 import { supabase } from "@/lib/supabase/client";
 import { useAuth } from "@/components/AuthProvider";
 
-type QuizState = "intro" | "playing" | "review" | "results";
+type QuizState = "playing" | "review" | "results";
 
 interface AnswerState {
   selectedAnswer: string | null;
@@ -21,8 +21,8 @@ interface AnswerState {
 }
 
 export default function Quiz() {
-  const [state, setState] = useState<QuizState>("intro");
-  const [questions, setQuestions] = useState<Question[]>([]);
+  const [state, setState] = useState<QuizState>("playing");
+  const [questions, setQuestions] = useState<Question[]>(() => selectExamQuestions());
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<number, AnswerState>>({});
   const [score, setScore] = useState(0);
@@ -45,6 +45,8 @@ export default function Quiz() {
     resultStoredRef.current = false;
     setState("playing");
   }, []);
+
+  // questions are initialized synchronously to avoid a blank render
 
   const currentQuestion = questions[currentIndex];
   const currentAnswer = answers[currentIndex];
@@ -141,45 +143,8 @@ export default function Quiz() {
     persistResult();
   }, [state, user, score]);
 
-  if (state === "intro") {
-    return (
-      <div className="question-card p-8 text-center max-w-2xl mx-auto animate-scale-in">
-        <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
-          <Target className="w-8 h-8 text-primary" />
-        </div>
-        <h2 className="text-2xl font-bold mb-4">Entraînez-vous à l'examen civique dans des conditions réelles.</h2>
-        <p className="text-muted-foreground mb-6 leading-relaxed">
-          Cet examen contient <strong>40 questions</strong> réparties selon les thématiques officielles. 
-          Vous devez obtenir au moins <strong>32 bonnes réponses (80%)</strong> pour réussir.
-        </p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8 text-sm">
-          <div className="p-3 bg-muted rounded-lg">
-            <span className="font-semibold">Principes & Valeurs</span>
-            <span className="block text-muted-foreground">11 questions</span>
-          </div>
-          <div className="p-3 bg-muted rounded-lg">
-            <span className="font-semibold">Institutions</span>
-            <span className="block text-muted-foreground">6 questions</span>
-          </div>
-          <div className="p-3 bg-muted rounded-lg">
-            <span className="font-semibold">Droits & Devoirs</span>
-            <span className="block text-muted-foreground">11 questions</span>
-          </div>
-          <div className="p-3 bg-muted rounded-lg">
-            <span className="font-semibold">Histoire & Culture</span>
-            <span className="block text-muted-foreground">8 questions</span>
-          </div>
-          <div className="p-3 bg-muted rounded-lg sm:col-span-2">
-            <span className="font-semibold">Vie en Société</span>
-            <span className="block text-muted-foreground">4 questions</span>
-          </div>
-        </div>
-        <Button onClick={initQuiz} size="lg" className="gap-2">
-          Commencer l'examen
-          <ArrowRight className="w-4 h-4" />
-        </Button>
-      </div>
-    );
+  if (questions.length === 0) {
+    return null;
   }
 
   if (state === "results") {

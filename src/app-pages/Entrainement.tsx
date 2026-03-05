@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import Quiz from "@/components/Quiz";
-import TimedExam from "@/components/TimedExam";
+import dynamic from "next/dynamic";
 import FAQSection, { homeFaqItems } from "@/components/FAQSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import { Target, Clock, CheckCircle2 } from "lucide-react";
+
+const Quiz = dynamic(() => import("@/components/Quiz"), { ssr: false, loading: () => null });
+const TimedExam = dynamic(() => import("@/components/TimedExam"), { ssr: false, loading: () => null });
 
 export default function Entrainement() {
   const [mode, setMode] = useState<"training" | "exam">("training");

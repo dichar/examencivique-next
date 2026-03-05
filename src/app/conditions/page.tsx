@@ -1,6 +1,9 @@
 export const metadata = {
   title: "Conditions d'utilisation",
   description: "Conditions d'utilisation d'ExamenCivique.info.",
+  alternates: {
+    canonical: "https://www.examencivique.info/conditions",
+  },
 };
 
 export default function ConditionsPage() {
