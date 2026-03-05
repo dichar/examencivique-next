@@ -135,16 +135,38 @@ export default function TimedExam() {
     resultStoredRef.current = true;
 
     const persistResult = async () => {
-      await supabase.from("quiz_results").insert({
+      const { data, error } = await supabase
+        .from("quiz_results")
+        .insert({
         user_id: user.id,
         score: finalScore,
         total_questions: TOTAL_QUESTIONS,
         passed: finalScore >= PASSING_SCORE,
+        })
+        .select("id")
+        .single();
+
+      if (error || !data) return;
+
+      const answerRows = questions.map((question, index) => {
+        const answer = answers[index];
+        return {
+          quiz_result_id: data.id,
+          user_id: user.id,
+          question_id: question.id,
+          question_text: question.question,
+          theme: question.theme,
+          selected_answer: answer?.selectedAnswer ?? null,
+          correct_answer: question.correctAnswer,
+          is_correct: answer?.isCorrect ?? null,
+        };
       });
+
+      await supabase.from("quiz_answers").insert(answerRows);
     };
 
     persistResult();
-  }, [state, user, finalScore]);
+  }, [state, user, finalScore, questions, answers]);
 
   if (questions.length === 0) {
     return null;
