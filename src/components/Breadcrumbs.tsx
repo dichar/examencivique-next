@@ -52,10 +52,15 @@ export default function Breadcrumbs() {
     })),
   };
 
+  const hideOnMobile = pathname.startsWith("/entrainement") || pathname.startsWith("/examen-chronometre");
+
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <nav aria-label="Fil d'Ariane" className="bg-muted/50 border-b border-border">
+      <nav
+        aria-label="Fil d'Ariane"
+        className={`bg-muted/50 border-b border-border ${hideOnMobile ? "hidden sm:block" : ""}`}
+      >
         <div className="container-wide py-3">
           <ol className="flex items-center gap-2 text-sm flex-wrap" itemScope itemType="https://schema.org/BreadcrumbList">
             <li itemProp="itemListElement" itemScope itemType="https://schema.org/ListItem">

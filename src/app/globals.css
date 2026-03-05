@@ -181,7 +181,7 @@
   }
 
   .seo-section {
-    @apply py-16 md:py-24;
+    @apply pt-8 md:pt-16;
   }
 
   .container-narrow {

@@ -23,7 +23,7 @@ export default function ExamenChronometrePage() {
     <>
       
 
-      <main className="py-12">
+      <main className="py-12 quiz-page">
         <div className="container-wide">
           <header className="text-center mb-12">
             <h1 className="text-3xl sm:text-4xl font-bold mb-4">

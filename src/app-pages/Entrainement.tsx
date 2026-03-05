@@ -14,9 +14,9 @@ export default function Entrainement() {
 
   return (
     <>
-      <section className="seo-section bg-gradient-to-b from-background to-muted/30">
+      <section className="seo-section quiz-page bg-gradient-to-b from-background to-muted/30">
         <div className="container-wide">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
+          <div className="hidden sm:flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
             <div>
               <h2 className="text-2xl font-bold">Choisissez votre mode</h2>
               <p className="text-muted-foreground text-sm">
