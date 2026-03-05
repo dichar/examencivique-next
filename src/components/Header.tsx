@@ -306,19 +306,15 @@ export default function Header() {
                   </>
                 ) : (
                   <>
-                    <Link
-                      href="/login"
-                      onClick={() => setIsOpen(false)}
-                      className="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-muted-foreground hover:text-foreground hover:bg-muted"
-                    >
-                      Connexion
+                    <Link href="/login" onClick={() => setIsOpen(false)}>
+                      <Button variant="outline" className="w-full">
+                        Connexion
+                      </Button>
                     </Link>
-                    <Link
-                      href="/inscription"
-                      onClick={() => setIsOpen(false)}
-                      className="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-muted-foreground hover:text-foreground hover:bg-muted"
-                    >
-                      S'inscrire
+                    <Link href="/inscription" onClick={() => setIsOpen(false)}>
+                      <Button className="w-full">
+                        S'inscrire
+                      </Button>
                     </Link>
                   </>
                 )}
