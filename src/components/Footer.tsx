@@ -151,6 +151,16 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/confidentialite" className="text-sm text-background/70 hover:text-background transition-colors">
+                  Politique de confidentialité
+                </Link>
+              </li>
+              <li>
+                <Link href="/conditions" className="text-sm text-background/70 hover:text-background transition-colors">
+                  Conditions d'utilisation
+                </Link>
+              </li>
+              <li>
                 <a 
                   href="https://formation-civique.interieur.gouv.fr/examen-civique/liste-officielle-des-questions-de-connaissance-cr/" 
                   target="_blank" 
