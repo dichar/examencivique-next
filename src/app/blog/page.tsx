@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import BlogPage from "@/app-pages/Blog";
 
 export const metadata = {
@@ -18,5 +19,9 @@ export const metadata = {
 };
 
 export default function Page() {
-  return <BlogPage />;
+  return (
+    <Suspense>
+      <BlogPage />
+    </Suspense>
+  );
 }
