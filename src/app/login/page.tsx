@@ -1,14 +1,12 @@
- "use client";
+"use client";
 
-import { useEffect, useMemo } from "react";
+import { Suspense, useEffect, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import AuthForm from "@/components/AuthForm";
 import { useAuth } from "@/components/AuthProvider";
 
-export default function LoginPage() {
-  const router = useRouter();
+function SignupNotice() {
   const searchParams = useSearchParams();
-  const { user, loading } = useAuth();
   const signupNotice = useMemo(() => {
     const status = searchParams.get("signup");
     if (status === "confirm") {
@@ -19,6 +17,19 @@ export default function LoginPage() {
     }
     return null;
   }, [searchParams]);
+
+  if (!signupNotice) return null;
+
+  return (
+    <div className="question-card p-4 mb-6 border border-success/30 bg-success/10 text-success text-sm">
+      {signupNotice}
+    </div>
+  );
+}
+
+export default function LoginPage() {
+  const router = useRouter();
+  const { user, loading } = useAuth();
 
   useEffect(() => {
     if (!loading && user) {
@@ -36,11 +47,9 @@ export default function LoginPage() {
 
   return (
     <section className="container-narrow py-12">
-      {signupNotice && (
-        <div className="question-card p-4 mb-6 border border-success/30 bg-success/10 text-success text-sm">
-          {signupNotice}
-        </div>
-      )}
+      <Suspense fallback={null}>
+        <SignupNotice />
+      </Suspense>
       <AuthForm mode="login" />
     </section>
   );
