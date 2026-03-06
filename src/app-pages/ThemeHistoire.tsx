@@ -195,7 +195,7 @@ export default function ThemeHistoire() {
           <div className="text-center py-8">
             <h3 className="text-xl font-bold mb-4">Testez vos connaissances</h3>
             <p className="text-muted-foreground mb-6">
-              Ces dates sont fréquemment posées à l'examen. Entraînez-vous !
+              Ces dates sont fréquemment posées à l'examen. Entraînez-vous avec un QCM 40 questions.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button asChild size="lg">

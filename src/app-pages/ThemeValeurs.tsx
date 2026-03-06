@@ -184,9 +184,9 @@ export default function ThemeValeurs() {
             {/* CTA */}
             <div className="text-center py-8">
               <h3 className="text-xl font-bold mb-4">Testez vos connaissances</h3>
-              <p className="text-muted-foreground mb-6">
-                Ces valeurs sont au cœur de l'examen civique. Entraînez-vous avec notre simulateur.
-              </p>
+            <p className="text-muted-foreground mb-6">
+              Révisez ces valeurs thématiques puis passez un QCM 40 questions en conditions réelles.
+            </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button asChild size="lg">
                   <Link href="/">

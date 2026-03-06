@@ -6,7 +6,6 @@ import { Question, selectExamQuestions, themeColors, themeShortNames, PASSING_SC
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
-import { SUPPORT_EMAIL } from "@/lib/constants";
 import { CheckCircle2, XCircle, RotateCcw, Trophy, ChevronLeft, ChevronRight } from "lucide-react";
 import confetti from "canvas-confetti";
 import { supabase } from "@/lib/supabase/client";
@@ -27,14 +26,29 @@ export default function Quiz() {
   const [answers, setAnswers] = useState<Record<number, AnswerState>>({});
   const [score, setScore] = useState(0);
   const [showSignupPrompt, setShowSignupPrompt] = useState(false);
+  const [isLocked, setIsLocked] = useState(false);
   const resultsRecordedRef = useRef(false);
   const resultStoredRef = useRef(false);
   const { user } = useAuth();
 
   const QUIZ_COUNT_KEY = "examencivique.quizCount";
-  const SIGNUP_PROMPT_DISMISSED_KEY = "examencivique.signupPromptDismissed";
+  const hasSession = Boolean(user);
 
   const initQuiz = useCallback(() => {
+    if (!hasSession) {
+      try {
+        const raw = localStorage.getItem(QUIZ_COUNT_KEY);
+        const count = Number.parseInt(raw || "0", 10);
+        if (Number.isFinite(count) && count >= 1) {
+          setIsLocked(true);
+          setShowSignupPrompt(true);
+          return;
+        }
+      } catch {
+        // ignore storage failures
+      }
+    }
+
     const selected = selectExamQuestions();
     setQuestions(selected);
     setCurrentIndex(0);
@@ -44,7 +58,21 @@ export default function Quiz() {
     resultsRecordedRef.current = false;
     resultStoredRef.current = false;
     setState("playing");
-  }, []);
+  }, [hasSession]);
+
+  useEffect(() => {
+    if (user) return;
+    try {
+      const raw = localStorage.getItem(QUIZ_COUNT_KEY);
+      const count = Number.parseInt(raw || "0", 10);
+      if (Number.isFinite(count) && count >= 1) {
+        setIsLocked(true);
+        setShowSignupPrompt(true);
+      }
+    } catch {
+      // ignore storage failures
+    }
+  }, [user]);
 
   // questions are initialized synchronously to avoid a blank render
 
@@ -96,15 +124,6 @@ export default function Quiz() {
 
   const isPassed = score >= PASSING_SCORE;
 
-  const dismissSignupPrompt = useCallback(() => {
-    setShowSignupPrompt(false);
-    try {
-      localStorage.setItem(SIGNUP_PROMPT_DISMISSED_KEY, "true");
-    } catch {
-      // ignore storage failures (private mode, disabled storage)
-    }
-  }, []);
-
   useEffect(() => {
     if (state !== "results" || resultsRecordedRef.current || user) return;
 
@@ -116,8 +135,7 @@ export default function Quiz() {
       const nextCount = Number.isFinite(count) ? count + 1 : 1;
       localStorage.setItem(QUIZ_COUNT_KEY, String(nextCount));
 
-      const dismissed = localStorage.getItem(SIGNUP_PROMPT_DISMISSED_KEY) === "true";
-      if (nextCount >= 2 && !dismissed) {
+      if (nextCount >= 1) {
         setShowSignupPrompt(true);
       }
     } catch {
@@ -164,6 +182,48 @@ export default function Quiz() {
 
     persistResult();
   }, [state, user, score, questions, answers]);
+
+  if (isLocked) {
+    return (
+      <>
+        <Dialog open={showSignupPrompt} onOpenChange={setShowSignupPrompt}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Inscription obligatoire</DialogTitle>
+              <DialogDescription>
+                Vous avez déjà passé un QCM. Inscrivez-vous pour refaire un test et consulter vos résultats.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button asChild>
+                <Link href="/inscription">S'inscrire</Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link href="/login">Se connecter</Link>
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {!showSignupPrompt && (
+          <div className="question-card p-8 text-center max-w-2xl mx-auto">
+            <h2 className="text-2xl font-bold mb-2">Accès limité</h2>
+            <p className="text-muted-foreground mb-6">
+              Vous avez déjà passé un QCM. Inscrivez-vous ou connectez-vous pour continuer.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Button asChild>
+                <Link href="/inscription">S'inscrire</Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link href="/login">Se connecter</Link>
+              </Button>
+            </div>
+          </div>
+        )}
+      </>
+    );
+  }
 
   if (questions.length === 0) {
     return null;
@@ -223,26 +283,20 @@ export default function Quiz() {
           </div>
         </div>
 
-        <Dialog open={showSignupPrompt} onOpenChange={(open) => !open && dismissSignupPrompt()}>
+        <Dialog open={showSignupPrompt} onOpenChange={setShowSignupPrompt}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Inscription gratuite</DialogTitle>
+              <DialogTitle>Inscription obligatoire</DialogTitle>
               <DialogDescription>
-                Vous avez terminé 2 quiz. Inscrivez-vous pour sauvegarder vos résultats et accéder à plus d'entraînements.
+                Vous avez déjà passé un QCM. Inscrivez-vous pour refaire un test et consulter vos résultats.
               </DialogDescription>
             </DialogHeader>
-            <div className="rounded-lg border border-primary/20 bg-primary/5 p-3 text-sm">
-              Support :{" "}
-              <Link href={`mailto:${SUPPORT_EMAIL}`} className="font-medium text-primary underline underline-offset-2">
-                {SUPPORT_EMAIL}
-              </Link>
-            </div>
             <DialogFooter>
-              <Button variant="outline" onClick={dismissSignupPrompt}>
-                Plus tard
-              </Button>
-              <Button asChild onClick={dismissSignupPrompt}>
+              <Button asChild>
                 <Link href="/inscription">S'inscrire</Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link href="/login">Se connecter</Link>
               </Button>
             </DialogFooter>
           </DialogContent>

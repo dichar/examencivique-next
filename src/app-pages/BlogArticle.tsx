@@ -253,7 +253,7 @@ export default function BlogArticle({ slug }: { slug: string }) {
             <BookOpen className="w-12 h-12 text-primary mx-auto mb-4" />
             <h3 className="text-xl font-bold mb-2">Prêt à vous entraîner ?</h3>
             <p className="text-muted-foreground mb-6">
-              Testez vos connaissances avec notre simulateur gratuit
+              Testez-vous avec un simulateur 40 questions et identifiez vos points faibles
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link href="/entrainement">

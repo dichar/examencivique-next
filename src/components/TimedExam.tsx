@@ -2,7 +2,9 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Question, selectExamQuestions, themeColors, themeShortNames, PASSING_SCORE, TOTAL_QUESTIONS, EXAM_DURATION_MINUTES } from "@/lib/questions";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { CheckCircle2, XCircle, RotateCcw, Trophy, ArrowRight, ChevronLeft, ChevronRight, Clock, Timer } from "lucide-react";
 import confetti from "canvas-confetti";
@@ -28,8 +30,25 @@ export default function TimedExam() {
   const endTimeRef = useRef<number | null>(null);
   const resultStoredRef = useRef(false);
   const { user } = useAuth();
+  const QUIZ_COUNT_KEY = "examencivique.quizCount";
+  const [showSignupPrompt, setShowSignupPrompt] = useState(false);
+  const [isLocked, setIsLocked] = useState(false);
 
   const initExam = useCallback(() => {
+    if (!user) {
+      try {
+        const raw = localStorage.getItem(QUIZ_COUNT_KEY);
+        const count = Number.parseInt(raw || "0", 10);
+        if (Number.isFinite(count) && count >= 1) {
+          setIsLocked(true);
+          setShowSignupPrompt(true);
+          return;
+        }
+      } catch {
+        // ignore storage failures
+      }
+    }
+
     const selected = selectExamQuestions();
     setQuestions(selected);
     setCurrentIndex(0);
@@ -39,7 +58,7 @@ export default function TimedExam() {
     endTimeRef.current = Date.now() + EXAM_DURATION_MINUTES * 60 * 1000;
     resultStoredRef.current = false;
     setState("playing");
-  }, []);
+  }, [user]);
 
   // questions are initialized synchronously to avoid a blank render
 
@@ -168,8 +187,105 @@ export default function TimedExam() {
     persistResult();
   }, [state, user, finalScore, questions, answers]);
 
+  useEffect(() => {
+    if (state !== "results" && state !== "timeUp") return;
+    if (user) return;
+
+    try {
+      const raw = localStorage.getItem(QUIZ_COUNT_KEY);
+      const count = Number.parseInt(raw || "0", 10);
+      const nextCount = Number.isFinite(count) ? count + 1 : 1;
+      localStorage.setItem(QUIZ_COUNT_KEY, String(nextCount));
+
+      if (nextCount >= 1) {
+        setShowSignupPrompt(true);
+      }
+    } catch {
+      // ignore storage failures
+    }
+  }, [state, user]);
+
+  useEffect(() => {
+    if (user) return;
+    try {
+      const raw = localStorage.getItem(QUIZ_COUNT_KEY);
+      const count = Number.parseInt(raw || "0", 10);
+      if (Number.isFinite(count) && count >= 1) {
+        setIsLocked(true);
+        setShowSignupPrompt(true);
+      }
+    } catch {
+      // ignore storage failures
+    }
+  }, [user]);
+
   if (questions.length === 0) {
     return null;
+  }
+
+  if (isLocked) {
+    return (
+      <>
+        <Dialog open={showSignupPrompt} onOpenChange={setShowSignupPrompt}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Inscription obligatoire</DialogTitle>
+              <DialogDescription>
+                Vous avez déjà passé un QCM. Inscrivez-vous pour refaire un test et consulter vos résultats.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button asChild>
+                <Link href="/inscription">S'inscrire</Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link href="/login">Se connecter</Link>
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {!showSignupPrompt && (
+          <div className="question-card p-8 text-center max-w-2xl mx-auto">
+            <h2 className="text-2xl font-bold mb-2">Accès limité</h2>
+            <p className="text-muted-foreground mb-6">
+              Vous avez déjà passé un QCM. Inscrivez-vous ou connectez-vous pour continuer.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Button asChild>
+                <Link href="/inscription">S'inscrire</Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link href="/login">Se connecter</Link>
+              </Button>
+            </div>
+          </div>
+        )}
+      </>
+    );
+  }
+
+  if (!user && showSignupPrompt && (state === "results" || state === "timeUp")) {
+    return (
+      <Dialog open={showSignupPrompt} onOpenChange={setShowSignupPrompt}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Inscription obligatoire</DialogTitle>
+            <DialogDescription>
+              Vous avez déjà passé un QCM. Inscrivez-vous pour refaire un test et consulter vos résultats.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button asChild>
+              <Link href="/inscription">S'inscrire</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href="/login">Se connecter</Link>
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    );
   }
 
   if (state === "timeUp") {

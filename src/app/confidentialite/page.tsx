@@ -28,6 +28,17 @@ export default function ConfidentialitePage() {
             Vous pouvez demander la suppression de vos données en nous contactant via l’adresse de support indiquée sur
             le site.
           </p>
+          <p>
+            Base légale : exécution du contrat (création et gestion du compte) et intérêt légitime (amélioration du
+            service).
+          </p>
+          <p>
+            Durée de conservation : tant que votre compte est actif, puis suppression sur demande.
+          </p>
+          <p>
+            Vos droits RGPD : accès, rectification, effacement, limitation et opposition. Exercez-les via l’adresse de
+            support.
+          </p>
         </div>
       </div>
     </section>

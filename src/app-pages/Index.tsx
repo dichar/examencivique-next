@@ -106,13 +106,34 @@ export default function Index() {
 
           {/* H1 - Single, keyword-rich */}
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 text-balance animate-fade-in">
-            Préparation Examen Civique 2026 : Test QCM <span className="text-amber-300">Gratuit</span>
+            Préparez l'Examen Civique 2026 – Simulateur Gratuit 40 Questions OFII
           </h1>
 
           {/* AEO-optimized intro paragraph - direct answer format */}
-          <p className="text-lg sm:text-xl text-white/90 leading-relaxed mb-10 max-w-2xl mx-auto animate-fade-in">
+          <p className="text-lg sm:text-xl text-white/90 leading-relaxed mb-6 max-w-2xl mx-auto animate-fade-in">
             L'examen civique est un test obligatoire de <strong>40 questions QCM</strong> pour obtenir votre carte de
             séjour en France. Score minimum : <strong>32/40 (80%)</strong>. Exercez-vous à l'examen civique en situation réelle.
+          </p>
+          <p className="text-sm sm:text-base text-white/80 max-w-2xl mx-auto mb-8 animate-fade-in">
+            Site de préparation indépendant. Informations basées sur le{" "}
+            <a
+              href="https://www.interieur.gouv.fr/accueil"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline underline-offset-2 hover:text-white"
+            >
+              Ministère de l'Intérieur
+            </a>{" "}
+            et{" "}
+            <a
+              href="https://www.service-public.gouv.fr/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline underline-offset-2 hover:text-white"
+            >
+              Service-public.fr
+            </a>
+            .
           </p>
 
           {/* Primary CTA Buttons */}
@@ -172,10 +193,10 @@ export default function Index() {
         <section className="seo-section bg-gradient-to-b from-background to-muted/30" aria-labelledby="quiz-heading">
           <div className="container-wide text-center">
             <h2 id="quiz-heading" className="text-2xl sm:text-3xl font-bold mb-4">
-              Préparez-vous à l'examen civique comme si vous y étiez.
+              Testez-vous en Conditions Réelles (45 min, 40 questions)
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto mb-6">
-              Testez vos connaissances dans des conditions identiques à l'examen civique.
+              Simulateur gratuit calqué sur l'examen officiel : 40 questions, 45 minutes, score minimum 32/40.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <a
@@ -201,7 +222,7 @@ export default function Index() {
           <div className="container-narrow">
             <header className="text-center mb-12">
               <h2 id="answers-heading" className="text-2xl sm:text-3xl font-bold mb-4">
-                Tout savoir sur l'examen civique en bref
+                Questions Officielles Examen Civique
               </h2>
               <p className="text-muted-foreground max-w-2xl mx-auto">
                 Réponses directes aux questions les plus posées sur le test civique OFII
@@ -225,7 +246,7 @@ export default function Index() {
                 Guides d'étude
               </div>
               <h2 id="guides-heading" className="text-2xl sm:text-3xl font-bold mb-4">
-                Comment se préparer à l'examen civique ?
+                Guide Préparation Naturalisation/Cartes Séjour
               </h2>
               <p className="text-muted-foreground max-w-2xl mx-auto">
                 Nos ressources complètes pour maximiser vos chances de réussite
@@ -236,7 +257,7 @@ export default function Index() {
               <article className="group p-6 bg-card rounded-xl border border-border hover:border-primary/50 transition-all hover:shadow-lg">
                 <FileText className="w-10 h-10 text-primary mb-4" aria-hidden="true" />
                 <h3 className="font-semibold mb-2 group-hover:text-primary transition-colors">
-                  <Link href="/questions">Liste complète des questions 2025</Link>
+                  <Link href="/questions">Liste complète des questions 2026</Link>
                 </h3>
                 <p className="text-sm text-muted-foreground mb-4">
                   1800+ questions officielles avec réponses organisées par les 5 thématiques
@@ -397,14 +418,31 @@ export default function Index() {
           <div className="container-narrow">
             <header className="text-center mb-10">
               <h2 id="seo-content-heading" className="text-2xl sm:text-3xl font-bold mb-4">
-                Tout comprendre sur l'examen civique français
+                Livret du Citoyen PDF Gratuit
               </h2>
               <p className="text-muted-foreground max-w-2xl mx-auto">
-                Guide complet pour réussir votre test civique OFII en 2025
+                Téléchargez la version officielle du livret du citoyen pour réviser les notions clés.
               </p>
             </header>
 
-            <div className="prose prose-lg max-w-none text-muted-foreground space-y-6">
+            <div className="prose prose-lg max-w-none text-muted-foreground space-y-6 text-center">
+              <p className="leading-relaxed">
+                Le livret du citoyen est une source officielle pour comprendre les valeurs et institutions françaises.
+                Téléchargez-le gratuitement et complétez votre préparation avec le simulateur 40 questions.
+              </p>
+              <div>
+                <a
+                  href="https://www.interieur.gouv.fr/Media/Immigration/Files/Le-livret-du-citoyen"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors"
+                >
+                  Télécharger le livret du citoyen (PDF)
+                </a>
+              </div>
+            </div>
+
+            <div className="prose prose-lg max-w-none text-muted-foreground space-y-6 mt-10">
               <div className="grid md:grid-cols-2 gap-8">
                 <article>
                   <h3 className="text-xl font-semibold text-foreground mb-3">Qu'est-ce que l'examen civique ?</h3>
@@ -504,8 +542,7 @@ export default function Index() {
               Mettez-vous en condition réelle pour réussir l'examen civique
             </h2>
             <p className="text-white/90 mb-8 max-w-xl mx-auto">
-              Notre simulateur gratuit utilise les questions officielles du Ministère de l'Intérieur. Entraînez-vous
-              autant de fois que nécessaire.
+              Simulateur gratuit basé sur les 40 questions de l'examen réel. Entraînez-vous autant de fois que nécessaire.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a

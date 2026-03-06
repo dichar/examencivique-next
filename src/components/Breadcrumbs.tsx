@@ -24,6 +24,12 @@ const routeNames: Record<string, string> = {
   "quand-passer-examen": "Quand Passer l'Examen",
   "preparation-inscription": "Préparation et Inscription",
   "amenagements-dispenses": "Aménagements et Dispenses",
+  "guide-deroulement-examen-civique-2026": "Déroulement Examen Civique 2026",
+  "examen-civique-naturalisation-2026": "Examen Civique Naturalisation 2026",
+  "csp-cr-examen-civique-2026-comparatif": "Comparatif CSP vs CR 2026",
+  "livret-citoyen-2026-pdf": "Livret du Citoyen 2026",
+  "erreurs-frequentes-examen-civique-ofii": "Erreurs Fréquentes OFII",
+  "mentions-legales": "Mentions légales",
 };
 
 export default function Breadcrumbs() {

@@ -51,7 +51,7 @@ export default function Footer() {
               <li>
                 <Link href="/questions" className="text-sm text-background/70 hover:text-background transition-colors inline-flex items-center gap-2">
                   <FileText className="w-4 h-4" />
-                  Liste des Questions 2025
+                  Liste des Questions 2026
                 </Link>
               </li>
               <li>
@@ -156,6 +156,11 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/mentions-legales" className="text-sm text-background/70 hover:text-background transition-colors">
+                  Mentions légales
+                </Link>
+              </li>
+              <li>
                 <Link href="/conditions" className="text-sm text-background/70 hover:text-background transition-colors">
                   Conditions d'utilisation
                 </Link>
@@ -176,7 +181,7 @@ export default function Footer() {
 
         <div className="border-t border-background/10 mt-8 pt-8 text-center text-sm text-background/60">
           <p>
-            © {new Date().getFullYear()} ExamenCivique.info — Site d'entraînement non officiel
+            © 2026 ExamenCivique.info — Site d'entraînement non officiel
           </p>
           <p className="mt-2">
             Les questions proviennent à 100% du{" "}
@@ -188,6 +193,27 @@ export default function Footer() {
             >
               Ministère de l'Intérieur
             </a>
+          </p>
+          <p className="mt-2">
+            Site de préparation indépendant. Informations basées sur le{" "}
+            <a
+              href="https://www.interieur.gouv.fr/accueil"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-background"
+            >
+              Ministère de l'Intérieur
+            </a>{" "}
+            et{" "}
+            <a
+              href="https://www.service-public.gouv.fr/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-background"
+            >
+              Service-public.fr
+            </a>
+            .
           </p>
         </div>
       </div>

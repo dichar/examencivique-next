@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { allQuestions, getQuestionsByTheme, themeColors, themeShortNames, themeQuotas } from "@/lib/questions";
 import { ChevronDown, ChevronUp, Search, FileText, Download } from "lucide-react";
@@ -61,12 +62,12 @@ export default function Questions() {
             </div>
             
             <h1 className="text-3xl sm:text-4xl font-bold mb-4">
-              Liste Officielle des Questions de l'Examen Civique 2025
+              Liste Officielle 40 Questions Examen Civique 2026 + Réponses (PDF)
             </h1>
             
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
-              Toutes les questions du Ministère de l'Intérieur organisées par thématique, 
-              avec les réponses correctes et explications détaillées.
+              Les 40 questions de l'examen sont tirées de cette liste officielle du Ministère de l'Intérieur, 
+              organisée par thématique, avec les réponses correctes et explications détaillées.
             </p>
 
             {/* Search and Filter */}
@@ -122,6 +123,15 @@ export default function Questions() {
                   </button>
                 );
               })}
+            </div>
+
+            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
+              <p className="text-sm text-muted-foreground">
+                Toutes les questions thématiques sont ici. Testez-vous ensuite sur 40 questions en conditions réelles.
+              </p>
+              <Button asChild size="sm">
+                <Link href="/examen-chronometre?start=1">Lancer le simulateur</Link>
+              </Button>
             </div>
           </div>
 

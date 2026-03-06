@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
@@ -31,14 +32,33 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
         if (error) throw error;
         router.push("/compte");
       } else {
-        const { error } = await supabase.auth.signUp({ email, password });
+        const { data, error } = await supabase.auth.signUp({ email, password });
         if (error) throw error;
-        setMessage("Compte créé. Vous pouvez vous connecter.");
-        router.push("/login");
+        const signupStatus = data?.session ? "success" : "confirm";
+        router.push(`/login?signup=${signupStatus}`);
       }
     } catch (err) {
       const error = err as Error;
-      setMessage(error.message || "Une erreur est survenue.");
+      const rawMessage = (error?.message || "").toLowerCase();
+      let friendly = "Une erreur est survenue. Vérifiez vos informations et réessayez.";
+
+      if (rawMessage.includes("invalid login credentials")) {
+        friendly = "Email ou mot de passe incorrect.";
+      } else if (rawMessage.includes("email not confirmed")) {
+        friendly = "Email non confirmé. Vérifiez votre boîte mail avant de vous connecter.";
+      } else if (rawMessage.includes("user already registered")) {
+        friendly = "Un compte existe déjà avec cet email. Connectez-vous ou réinitialisez le mot de passe.";
+      } else if (rawMessage.includes("password") && rawMessage.includes("least")) {
+        friendly = "Mot de passe trop court. Utilisez au moins 6 caractères.";
+      } else if (rawMessage.includes("weak password")) {
+        friendly = "Mot de passe trop faible. Utilisez au moins 6 caractères et une combinaison de lettres/chiffres.";
+      } else if (rawMessage.includes("rate limit") || rawMessage.includes("too many")) {
+        friendly = "Trop de tentatives. Réessayez dans quelques minutes.";
+      } else if (rawMessage.includes("user not found")) {
+        friendly = "Aucun compte associé à cet email.";
+      }
+
+      setMessage(friendly);
     } finally {
       setLoading(false);
     }
@@ -57,7 +77,7 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
     });
 
     if (error) {
-      setMessage(error.message);
+      setMessage("Impossible de se connecter avec Google pour le moment. Réessayez plus tard.");
       setLoading(false);
     }
   };
@@ -103,13 +123,28 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
             onChange={(event) => setPassword(event.target.value)}
             required
           />
+          {mode === "signup" && (
+            <p className="text-xs text-muted-foreground">Minimum 6 caractères.</p>
+          )}
         </div>
         <Button className="w-full" type="submit" disabled={loading}>
           {buttonLabel}
         </Button>
       </form>
 
-      {message && <p className="text-sm text-muted-foreground mt-4">{message}</p>}
+      {message && <p className="text-sm text-destructive mt-4">{message}</p>}
+
+      <p className="text-xs text-muted-foreground mt-6">
+        En créant un compte, vous acceptez la{" "}
+        <Link href="/confidentialite" className="underline underline-offset-2">
+          Politique de confidentialité
+        </Link>{" "}
+        et les{" "}
+        <Link href="/conditions" className="underline underline-offset-2">
+          Conditions d'utilisation
+        </Link>
+        .
+      </p>
 
       <p className="text-xs text-muted-foreground mt-6">
         Besoin d'aide ?{" "}
