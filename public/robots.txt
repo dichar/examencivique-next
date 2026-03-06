@@ -1,18 +1,43 @@
 # Robots.txt for ExamenCivique.info
-# Last updated: 2026-01-28
+# Last updated: 2026-03-06
 
+# --- Moteurs de recherche classiques ---
 User-agent: Googlebot
 Allow: /
 
 User-agent: Bingbot
 Allow: /
 
+# --- Réseaux sociaux ---
 User-agent: Twitterbot
 Allow: /
 
 User-agent: facebookexternalhit
 Allow: /
 
+# --- Robots IA et LLMs (GEO / AIO) ---
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+# --- Règles générales (Tous les autres robots) ---
 User-agent: *
 Allow: /
 Disallow: /api/
