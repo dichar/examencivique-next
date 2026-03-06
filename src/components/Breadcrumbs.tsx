@@ -30,6 +30,9 @@ const routeNames: Record<string, string> = {
   "livret-citoyen-2026-pdf": "Livret du Citoyen 2026",
   "erreurs-frequentes-examen-civique-ofii": "Erreurs Fréquentes OFII",
   "mentions-legales": "Mentions légales",
+  "qcm-csp": "QCM CSP",
+  "qcm-cr": "QCM CR",
+  "qcm-naturalisation": "QCM Naturalisation",
 };
 
 export default function Breadcrumbs() {

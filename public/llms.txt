@@ -24,7 +24,7 @@ Le site s'adresse spécifiquement aux candidats préparant :
 
 ## Site Structure
 
-### 🎯 Préparation Intensive & Tests
+### Préparation Intensive & Tests
 - **Tableau de bord d'entraînement** (`/entrainement`) : Point d'entrée pour la révision active.
 - **Modules d'Entraînement** (`/modules-entrainement`) : Exercices ciblés et progressifs.
 - **Mode Examen Réel** (`/examen-chronometre`) : Test blanc avec gestion du temps pour réduire le stress de l'épreuve.
@@ -32,7 +32,7 @@ Le site s'adresse spécifiquement aux candidats préparant :
 - **Focus Valeurs** (`/themes/valeurs`) : Immersion sur les principes de la République.
 - **Focus Histoire** (`/themes/histoire`) : Chronologie et dates clés indispensables.
 
-### 📚 Ressources Pédagogiques & Guides Officiels
+### Ressources Pédagogiques & Guides Officiels
 - **Qu'est-ce que l'examen civique ?** (`/quest-ce-que-examen-civique`) : Présentation générale de l'épreuve.
 - **Le Guide 2026** (`/guide-deroulement-examen-civique-2026`) : Manuel complet sur le déroulement.
 - **Examen Civique Naturalisation** (`/examen-civique-naturalisation-2026`) : Spécificités pour l'accès à la nationalité.
@@ -42,7 +42,7 @@ Le site s'adresse spécifiquement aux candidats préparant :
 - **Analyse des erreurs** (`/erreurs-frequentes-examen-civique-ofii`) : Les pièges classiques identifiés chez les candidats.
 - **Comparatif des parcours** (`/csp-cr-examen-civique-2026-comparatif`) : Différences entre CSP, CR et Naturalisation.
 
-### 🛠️ Informations Administratives
+### Informations Administratives
 - **Quand passer l'examen ?** (`/quand-passer-examen`) : Calendrier et délais.
 - **Inscription et Préparation** (`/preparation-inscription`) : Guide étape par étape pour le dossier.
 - **FAQ Experte** (`/faq`) : Réponses aux questions courantes et complexes.
@@ -50,7 +50,7 @@ Le site s'adresse spécifiquement aux candidats préparant :
 - **Aménagements & Dispenses** (`/amenagements-dispenses`) : Informations pour les seniors, handicaps ou diplômés.
 - **À Propos** (`/a-propos`) : Présentation de notre expertise et de notre mission.
 
-### 📰 Intelligence & Actualités (Blog)
+### Intelligence & Actualités (Blog)
 Le blog (`/blog`) propose des articles de fond pour une maîtrise parfaite du sujet :
 - `/blog/40-questions-examen-civique-reponses` (Pratique)
 - `/blog/laicite-france-explication` (Conceptuel)

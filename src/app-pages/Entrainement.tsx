@@ -45,6 +45,7 @@ export default function Entrainement() {
 
           {mode === "training" ? <Quiz /> : <TimedExam />}
         </div>
+        <br/>
       </section>
       <header className="bg-gradient-to-b from-primary via-primary to-primary/90 text-primary-foreground py-10 sm:py-14">
         <div className="container-wide text-center">

@@ -109,6 +109,24 @@
     <priority>0.9</priority>
   </url>
   <url>
+    <loc>https://www.examencivique.info/qcm-csp</loc>
+    <lastmod>2026-03-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.examencivique.info/qcm-cr</loc>
+    <lastmod>2026-03-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.examencivique.info/qcm-naturalisation</loc>
+    <lastmod>2026-03-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
     <loc>https://www.examencivique.info/blog</loc>
     <lastmod>2026-03-05</lastmod>
     <changefreq>weekly</changefreq>

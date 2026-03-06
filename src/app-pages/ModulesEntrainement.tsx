@@ -56,7 +56,7 @@ export default function ModulesEntrainement() {
                   Toutes les Questions
                 </h3>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Consultez la liste complète des 1800+ questions officielles
+                  Consultez la liste complète des 1800+ questions
                 </p>
                 <span className="inline-flex items-center gap-1 text-sm text-primary font-medium">
                   Voir les questions <ArrowRight className="w-4 h-4" />

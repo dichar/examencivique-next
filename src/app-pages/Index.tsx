@@ -157,6 +157,27 @@ export default function Index() {
             </a>
           </div>
 
+          <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <Link
+              href="/qcm-csp"
+              className="inline-flex items-center justify-center px-5 py-2.5 rounded-lg bg-emerald-500 text-white hover:bg-emerald-600 transition-colors text-sm w-full sm:w-auto shadow-lg"
+            >
+              QCM Carte de Séjour Pluriannuelle (CSP)
+            </Link>
+            <Link
+              href="/qcm-cr"
+              className="inline-flex items-center justify-center px-5 py-2.5 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors text-sm w-full sm:w-auto shadow-lg"
+            >
+              QCM Carte de Résident (CR)
+            </Link>
+            <Link
+              href="/qcm-naturalisation"
+              className="inline-flex items-center justify-center px-5 py-2.5 rounded-lg bg-amber-500 text-white hover:bg-amber-600 transition-colors text-sm w-full sm:w-auto shadow-lg"
+            >
+              QCM Naturalisation Française
+            </Link>
+          </div>
+
           {/* Key Stats - Quick Facts for AEO */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-12 max-w-3xl mx-auto">
             <div className="p-4 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20">
@@ -466,7 +487,7 @@ export default function Index() {
                 <article>
                   <h3 className="text-xl font-semibold text-foreground mb-3">Comment bien se préparer ?</h3>
                   <p className="leading-relaxed">
-                    La préparation à l'examen civique nécessite une révision méthodique des 1800+ questions officielles
+                    La préparation à l'examen civique nécessite une révision méthodique des 1800+ questions
                     publiées par le Ministère de l'Intérieur. Notre simulateur gratuit reproduit les conditions réelles
                     de l'examen avec des questions aléatoires à chaque session. Nous vous recommandons de vous entraîner
                     régulièrement, idéalement 15 à 20 minutes par jour, pendant les deux semaines précédant votre
