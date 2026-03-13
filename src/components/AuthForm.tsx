@@ -11,7 +11,7 @@ import { SUPPORT_EMAIL } from "@/lib/constants";
 
 type AuthMode = "login" | "signup";
 
-export default function AuthForm({ mode }: { mode: AuthMode }) {
+export default function AuthForm({ mode, nextUrl }: { mode: AuthMode; nextUrl?: string }) {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -30,12 +30,13 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
       if (mode === "login") {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        router.push("/compte");
+        router.push(nextUrl || "/compte");
       } else {
         const { data, error } = await supabase.auth.signUp({ email, password });
         if (error) throw error;
         const signupStatus = data?.session ? "success" : "confirm";
-        router.push(`/login?signup=${signupStatus}`);
+        const nextParam = nextUrl ? `&next=${encodeURIComponent(nextUrl)}` : "";
+        router.push(`/login?signup=${signupStatus}${nextParam}`);
       }
     } catch (err) {
       const error = err as Error;
@@ -69,10 +70,11 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
     setMessage(null);
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
 
+    const nextParam = nextUrl ? `?next=${encodeURIComponent(nextUrl)}` : "";
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${siteUrl}/auth/google/callback`,
+        redirectTo: `${siteUrl}/auth/google/callback${nextParam}`,
       },
     });
 

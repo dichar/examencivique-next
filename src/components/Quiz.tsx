@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Question, selectExamQuestions, themeColors, themeShortNames, PASSING_SCORE, TOTAL_QUESTIONS } from "@/lib/questions";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -33,6 +34,8 @@ export default function Quiz() {
   const { count, paid, hasAccess, requiresSignup, freeLimit, increment } = useQuizAccess(user, profile);
   const [showPaywall, setShowPaywall] = useState(false);
   const [showSignupPrompt, setShowSignupPrompt] = useState(false);
+  const pathname = usePathname();
+  const nextUrl = useMemo(() => encodeURIComponent(pathname), [pathname]);
 
   const initQuiz = useCallback(() => {
     if (!hasAccess) {
@@ -108,9 +111,7 @@ export default function Quiz() {
     resultsRecordedRef.current = true;
     const nextCount = count + 1;
     increment();
-    if (user && nextCount >= freeLimit) {
-      setShowPaywall(true);
-    } else if (!user && nextCount >= 1) {
+    if (!user && nextCount >= 1) {
       setShowSignupPrompt(true);
     }
   }, [state, count, freeLimit, increment, user, paid]);
@@ -155,22 +156,21 @@ export default function Quiz() {
     persistResult();
   }, [state, user, score, questions, answers]);
 
-  if (!hasAccess) {
+  if (!hasAccess && state === "playing") {
     return (
       <>
         {requiresSignup ? (
           <div className="question-card p-8 text-center max-w-2xl mx-auto">
-            <h2 className="text-2xl font-bold mb-2">Créez votre compte</h2>
+            <h2 className="text-2xl font-bold mb-2">Voir mes résultats</h2>
             <p className="text-muted-foreground mb-6">
-              Vous avez terminé votre premier quiz. Créez un compte pour sauvegarder vos résultats et continuer votre
-              préparation.
+              Connectez-vous ou créez un compte pour consulter vos résultats et continuer votre préparation.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button asChild>
-                <Link href="/inscription">S&apos;inscrire</Link>
+                <Link href={`/login?next=${nextUrl}`}>Voir mes résultats</Link>
               </Button>
               <Button asChild variant="outline">
-                <Link href="/login">Se connecter</Link>
+                <Link href={`/inscription?next=${nextUrl}`}>Créer un compte</Link>
               </Button>
             </div>
           </div>
@@ -303,18 +303,17 @@ export default function Quiz() {
         <Dialog open={showSignupPrompt} onOpenChange={setShowSignupPrompt}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Créez votre compte</DialogTitle>
+              <DialogTitle>Voir mes résultats</DialogTitle>
               <DialogDescription>
-                Vous venez de terminer votre premier quiz. Créez un compte pour sauvegarder vos résultats et continuer
-                votre préparation.
+                Connectez-vous ou créez un compte pour consulter vos résultats et continuer votre préparation.
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>
               <Button asChild>
-                <Link href="/inscription">S&apos;inscrire</Link>
+                <Link href={`/login?next=${nextUrl}`}>Voir mes résultats</Link>
               </Button>
               <Button asChild variant="outline">
-                <Link href="/login">Se connecter</Link>
+                <Link href={`/inscription?next=${nextUrl}`}>Créer un compte</Link>
               </Button>
             </DialogFooter>
           </DialogContent>

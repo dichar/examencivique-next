@@ -27,15 +27,17 @@ function SignupNotice() {
   );
 }
 
-export default function LoginPage() {
+function LoginContent() {
   const router = useRouter();
   const { user, loading } = useAuth();
+  const searchParams = useSearchParams();
+  const nextUrl = searchParams.get("next") || "";
 
   useEffect(() => {
     if (!loading && user) {
-      router.replace("/");
+      router.replace(nextUrl || "/compte");
     }
-  }, [loading, user, router]);
+  }, [loading, user, router, nextUrl]);
 
   if (loading || user) {
     return (
@@ -46,11 +48,19 @@ export default function LoginPage() {
   }
 
   return (
+    <>
+      <SignupNotice />
+      <AuthForm mode="login" nextUrl={nextUrl || undefined} />
+    </>
+  );
+}
+
+export default function LoginPage() {
+  return (
     <section className="container-narrow py-12">
-      <Suspense fallback={null}>
-        <SignupNotice />
+      <Suspense fallback={<div className="question-card p-8 text-center">Chargement...</div>}>
+        <LoginContent />
       </Suspense>
-      <AuthForm mode="login" />
     </section>
   );
 }

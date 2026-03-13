@@ -1,11 +1,13 @@
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
 
-export default function GoogleCallbackPage() {
+function GoogleCallbackContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const nextUrl = searchParams.get("next") || "/compte";
 
   useEffect(() => {
     const exchange = async () => {
@@ -14,18 +16,26 @@ export default function GoogleCallbackPage() {
         router.push("/login");
         return;
       }
-      router.push("/compte");
+      router.push(nextUrl);
     };
 
     exchange();
-  }, [router]);
+  }, [router, nextUrl]);
 
   return (
+    <div className="question-card p-8 text-center">
+      <h1 className="text-xl font-semibold mb-2">Connexion en cours...</h1>
+      <p className="text-muted-foreground">Merci de patienter.</p>
+    </div>
+  );
+}
+
+export default function GoogleCallbackPage() {
+  return (
     <section className="container-narrow py-12">
-      <div className="question-card p-8 text-center">
-        <h1 className="text-xl font-semibold mb-2">Connexion en cours...</h1>
-        <p className="text-muted-foreground">Merci de patienter.</p>
-      </div>
+      <Suspense fallback={<div className="question-card p-8 text-center">Connexion en cours...</div>}>
+        <GoogleCallbackContent />
+      </Suspense>
     </section>
   );
 }

@@ -1,19 +1,21 @@
  "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import AuthForm from "@/components/AuthForm";
 import { useAuth } from "@/components/AuthProvider";
 
-export default function SignupPage() {
+function SignupContent() {
   const router = useRouter();
   const { user, loading } = useAuth();
+  const searchParams = useSearchParams();
+  const nextUrl = searchParams.get("next") || "";
 
   useEffect(() => {
     if (!loading && user) {
-      router.replace("/");
+      router.replace(nextUrl || "/compte");
     }
-  }, [loading, user, router]);
+  }, [loading, user, router, nextUrl]);
 
   if (loading || user) {
     return (
@@ -23,9 +25,15 @@ export default function SignupPage() {
     );
   }
 
+  return <AuthForm mode="signup" nextUrl={nextUrl || undefined} />;
+}
+
+export default function SignupPage() {
   return (
     <section className="container-narrow py-12">
-      <AuthForm mode="signup" />
+      <Suspense fallback={<div className="question-card p-8 text-center">Chargement...</div>}>
+        <SignupContent />
+      </Suspense>
     </section>
   );
 }
