@@ -30,7 +30,7 @@ export default function Quiz() {
   const resultsRecordedRef = useRef(false);
   const resultStoredRef = useRef(false);
   const { user, profile } = useAuth();
-  const { count, hasAccess, requiresSignup, freeLimit, increment } = useQuizAccess(user, profile);
+  const { count, paid, hasAccess, requiresSignup, freeLimit, increment } = useQuizAccess(user, profile);
   const [showPaywall, setShowPaywall] = useState(false);
   const [showSignupPrompt, setShowSignupPrompt] = useState(false);
 
@@ -104,7 +104,7 @@ export default function Quiz() {
   const isPassed = score >= PASSING_SCORE;
 
   useEffect(() => {
-    if (state !== "results" || resultsRecordedRef.current) return;
+    if (state !== "results" || resultsRecordedRef.current || paid) return;
     resultsRecordedRef.current = true;
     const nextCount = count + 1;
     increment();
@@ -113,7 +113,7 @@ export default function Quiz() {
     } else if (!user && nextCount >= 1) {
       setShowSignupPrompt(true);
     }
-  }, [state, count, freeLimit, increment, user]);
+  }, [state, count, freeLimit, increment, user, paid]);
 
   useEffect(() => {
     if (state !== "results" || !user || resultStoredRef.current) return;

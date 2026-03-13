@@ -33,7 +33,7 @@ export default function TimedExam() {
   const resultStoredRef = useRef(false);
   const resultsRecordedRef = useRef(false);
   const { user, profile } = useAuth();
-  const { count, hasAccess, requiresSignup, freeLimit, increment } = useQuizAccess(user, profile);
+  const { count, paid, hasAccess, requiresSignup, freeLimit, increment } = useQuizAccess(user, profile);
   const [showPaywall, setShowPaywall] = useState(false);
   const [showSignupPrompt, setShowSignupPrompt] = useState(false);
 
@@ -186,6 +186,7 @@ export default function TimedExam() {
   useEffect(() => {
     if (state !== "results" && state !== "timeUp") return;
     if (resultsRecordedRef.current) return;
+    if (paid) return;
     resultsRecordedRef.current = true;
     const nextCount = count + 1;
     increment();
@@ -194,7 +195,7 @@ export default function TimedExam() {
     } else if (!user && nextCount >= 1) {
       setShowSignupPrompt(true);
     }
-  }, [state, count, freeLimit, increment, user]);
+  }, [state, count, freeLimit, increment, user, paid]);
 
   const paymentLink = buildStripePaymentLink(user);
 

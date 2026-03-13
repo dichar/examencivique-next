@@ -131,7 +131,7 @@ export default function QuizEngine({
   const [instantCorrection, setInstantCorrection] = useState(true);
   const [state, setState] = useState<"playing" | "results">("playing");
   const { user, profile } = useAuth();
-  const { count, hasAccess, requiresSignup, freeLimit, increment } = useQuizAccess(user, profile);
+  const { count, paid, hasAccess, requiresSignup, freeLimit, increment } = useQuizAccess(user, profile);
   const [showPaywall, setShowPaywall] = useState(false);
   const [showSignupPrompt, setShowSignupPrompt] = useState(false);
 
@@ -214,10 +214,12 @@ export default function QuizEngine({
       setState("results");
       const nextCount = count + 1;
       increment();
-      if (user && nextCount >= freeLimit) {
-        setShowPaywall(true);
-      } else if (!user && nextCount >= 1) {
-        setShowSignupPrompt(true);
+      if (!paid) {
+        if (user && nextCount >= freeLimit) {
+          setShowPaywall(true);
+        } else if (!user && nextCount >= 1) {
+          setShowSignupPrompt(true);
+        }
       }
     }
   };
