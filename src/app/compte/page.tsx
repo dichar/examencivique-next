@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase/client";
 import { PASSING_SCORE } from "@/lib/questions";
+import { buildStripePaymentLink, PACK_DURATION, PACK_NAME, PACK_PRICE } from "@/lib/payments";
 import {
   ChartContainer,
   ChartTooltip,
@@ -14,7 +15,7 @@ import {
 import { CartesianGrid, Line, LineChart, ReferenceLine, XAxis, YAxis } from "recharts";
 
 export default function ComptePage() {
-  const { user, loading, signOut } = useAuth();
+  const { user, profile, loading, signOut, refreshProfile } = useAuth();
   const [results, setResults] = useState<
     { id: string; score: number; total_questions: number; passed: boolean; created_at: string }[]
   >([]);
@@ -42,6 +43,18 @@ export default function ComptePage() {
   const orderedResults = [...results].sort(
     (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
   );
+  const paidUntilRaw =
+    (profile?.paid_until as string | undefined) ?? (user?.user_metadata?.paid_until as string | undefined);
+  const paidUntilDate = paidUntilRaw ? new Date(paidUntilRaw) : null;
+  const hasActivePack =
+    Boolean(profile?.is_paid ?? user?.user_metadata?.is_paid) &&
+    paidUntilDate !== null &&
+    paidUntilDate > new Date();
+  const paymentLink = buildStripePaymentLink(user);
+  const packName =
+    (profile?.pack_name as string | undefined) ||
+    (user?.user_metadata?.pack_name as string | undefined) ||
+    PACK_NAME;
   const chartData = orderedResults.map((result, index) => ({
     index: index + 1,
     label: new Date(result.created_at).toLocaleDateString("fr-FR", {
@@ -59,6 +72,7 @@ export default function ComptePage() {
 
   useEffect(() => {
     if (!user) return;
+    refreshProfile();
 
     const fetchResults = async () => {
       setResultsLoading(true);
@@ -73,7 +87,7 @@ export default function ComptePage() {
     };
 
     fetchResults();
-  }, [user?.id]);
+  }, [user?.id, refreshProfile]);
 
   const loadAnswers = async (resultId: string) => {
     if (!user) return;
@@ -343,6 +357,38 @@ export default function ComptePage() {
             <Button variant="outline" onClick={() => signOut()}>
               Déconnexion
             </Button>
+          </div>
+        </section>
+
+        <section id="abonnement" className="pt-2 border-t border-border space-y-3">
+          <h2 className="text-lg font-semibold">Mon pack</h2>
+          <div className="rounded-lg border p-4 space-y-3">
+            <div>
+              <p className="font-semibold">{packName}</p>
+              {hasActivePack ? (
+                <p className="text-sm text-muted-foreground">
+                  Actif {paidUntilDate ? `jusqu'au ${paidUntilDate.toLocaleDateString("fr-FR")}` : "sans date limite"}
+                </p>
+              ) : (
+                <p className="text-sm text-muted-foreground">Aucun pack actif pour le moment.</p>
+              )}
+            </div>
+            <p className="text-sm text-muted-foreground">
+              {PACK_NAME} – {PACK_PRICE} · Accès {PACK_DURATION}
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Button asChild>
+                <a href={paymentLink} target="_blank" rel="noopener noreferrer">
+                  {hasActivePack ? "Renouveler le pack" : "Accéder à la version complète"}
+                </a>
+              </Button>
+              <Button asChild variant="outline">
+                <Link href="/questions">Voir les contenus inclus</Link>
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Paiement unique, activation immédiate après confirmation Stripe.
+            </p>
           </div>
         </section>
       </div>

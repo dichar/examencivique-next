@@ -587,7 +587,8 @@ Ces symboles incarnent les valeurs de la République. Ils sont essentiels pour l
     category: "Citoyenneté",
     date: "2024-12-25",
     readTime: 11,
-    metaDescription: "Guide complet sur les droits et devoirs du citoyen en France. Préparation examen civique OFII.",
+    metaDescription:
+      "Droits et devoirs du citoyen en France : libertés, obligations, égalité et protection des enfants. Guide complet pour l'examen civique OFII 2026.",
     keywords: ["droits", "devoirs", "citoyen", "France", "examen civique"],
     content: `
 # Droits et Devoirs 2026 : Ce qu'il faut savoir pour l'examen civique

@@ -11,6 +11,8 @@ import confetti from "canvas-confetti";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { supabase } from "@/lib/supabase/client";
 import { useAuth } from "@/components/AuthProvider";
+import { useQuizAccess } from "@/hooks/useQuizAccess";
+import { buildStripePaymentLink, PACK_DURATION, PACK_NAME, PACK_PRICE } from "@/lib/payments";
 
 type ExamState = "playing" | "review" | "results" | "timeUp";
 
@@ -29,26 +31,17 @@ export default function TimedExam() {
   const [timeLeft, setTimeLeft] = useState(EXAM_DURATION_MINUTES * 60);
   const endTimeRef = useRef<number | null>(null);
   const resultStoredRef = useRef(false);
-  const { user } = useAuth();
-  const QUIZ_COUNT_KEY = "examencivique.quizCount";
+  const resultsRecordedRef = useRef(false);
+  const { user, profile } = useAuth();
+  const { count, hasAccess, requiresSignup, freeLimit, increment } = useQuizAccess(user, profile);
+  const [showPaywall, setShowPaywall] = useState(false);
   const [showSignupPrompt, setShowSignupPrompt] = useState(false);
-  const [isLocked, setIsLocked] = useState(false);
 
   const initExam = useCallback(() => {
-    if (!user) {
-      try {
-        const raw = localStorage.getItem(QUIZ_COUNT_KEY);
-        const count = Number.parseInt(raw || "0", 10);
-        if (Number.isFinite(count) && count >= 1) {
-          setIsLocked(true);
-          setShowSignupPrompt(true);
-          return;
-        }
-      } catch {
-        // ignore storage failures
-      }
+    if (!hasAccess) {
+      setShowPaywall(true);
+      return;
     }
-
     const selected = selectExamQuestions();
     setQuestions(selected);
     setCurrentIndex(0);
@@ -57,8 +50,11 @@ export default function TimedExam() {
     setTimeLeft(EXAM_DURATION_MINUTES * 60);
     endTimeRef.current = Date.now() + EXAM_DURATION_MINUTES * 60 * 1000;
     resultStoredRef.current = false;
+    resultsRecordedRef.current = false;
     setState("playing");
-  }, [user]);
+    setShowPaywall(false);
+    setShowSignupPrompt(false);
+  }, [hasAccess]);
 
   // questions are initialized synchronously to avoid a blank render
 
@@ -189,98 +185,108 @@ export default function TimedExam() {
 
   useEffect(() => {
     if (state !== "results" && state !== "timeUp") return;
-    if (user) return;
-
-    try {
-      const raw = localStorage.getItem(QUIZ_COUNT_KEY);
-      const count = Number.parseInt(raw || "0", 10);
-      const nextCount = Number.isFinite(count) ? count + 1 : 1;
-      localStorage.setItem(QUIZ_COUNT_KEY, String(nextCount));
-
-      if (nextCount >= 1) {
-        setShowSignupPrompt(true);
-      }
-    } catch {
-      // ignore storage failures
+    if (resultsRecordedRef.current) return;
+    resultsRecordedRef.current = true;
+    const nextCount = count + 1;
+    increment();
+    if (user && nextCount >= freeLimit) {
+      setShowPaywall(true);
+    } else if (!user && nextCount >= 1) {
+      setShowSignupPrompt(true);
     }
-  }, [state, user]);
+  }, [state, count, freeLimit, increment, user]);
 
-  useEffect(() => {
-    if (user) return;
-    try {
-      const raw = localStorage.getItem(QUIZ_COUNT_KEY);
-      const count = Number.parseInt(raw || "0", 10);
-      if (Number.isFinite(count) && count >= 1) {
-        setIsLocked(true);
-        setShowSignupPrompt(true);
-      }
-    } catch {
-      // ignore storage failures
-    }
-  }, [user]);
+  const paymentLink = buildStripePaymentLink(user);
 
   if (questions.length === 0) {
     return null;
   }
 
-  if (isLocked) {
+  if (!hasAccess) {
     return (
       <>
-        <Dialog open={showSignupPrompt} onOpenChange={setShowSignupPrompt}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Inscription obligatoire</DialogTitle>
-              <DialogDescription>
-                Vous avez déjà passé un QCM. Inscrivez-vous pour refaire un test et consulter vos résultats.
-              </DialogDescription>
-            </DialogHeader>
-            <DialogFooter>
-              <Button asChild>
-                <Link href="/inscription">S'inscrire</Link>
-              </Button>
-              <Button asChild variant="outline">
-                <Link href="/login">Se connecter</Link>
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-
-        {!showSignupPrompt && (
+        {requiresSignup ? (
           <div className="question-card p-8 text-center max-w-2xl mx-auto">
-            <h2 className="text-2xl font-bold mb-2">Accès limité</h2>
+            <h2 className="text-2xl font-bold mb-2">Créez votre compte</h2>
             <p className="text-muted-foreground mb-6">
-              Vous avez déjà passé un QCM. Inscrivez-vous ou connectez-vous pour continuer.
+              Vous avez terminé votre premier quiz. Créez un compte pour sauvegarder vos résultats et continuer votre
+              préparation.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button asChild>
-                <Link href="/inscription">S'inscrire</Link>
+                <Link href="/inscription">S&apos;inscrire</Link>
               </Button>
               <Button asChild variant="outline">
                 <Link href="/login">Se connecter</Link>
               </Button>
             </div>
           </div>
+        ) : (
+          <>
+            <Dialog open={showPaywall} onOpenChange={setShowPaywall}>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Accès limité</DialogTitle>
+                  <DialogDescription>
+                    Vous avez utilisé vos {freeLimit} quiz gratuits. Pour continuer à vous entraîner et accéder à tous
+                    les quiz, passez au {PACK_NAME} – {PACK_PRICE}.
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                  <Button asChild>
+                    <a href={paymentLink} target="_blank" rel="noopener noreferrer">
+                      Accéder à la version complète
+                    </a>
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+
+            {!showPaywall && (
+              <div className="question-card p-8 text-center max-w-2xl mx-auto">
+                <h2 className="text-2xl font-bold mb-2">Accès limité</h2>
+                <p className="text-muted-foreground mb-6">
+                  Vous avez utilisé vos {freeLimit} quiz gratuits. Pour continuer à vous entraîner et accéder à tous les
+                  quiz, passez au {PACK_NAME} – {PACK_PRICE}.
+                </p>
+                <Button asChild>
+                  <a href={paymentLink} target="_blank" rel="noopener noreferrer">
+                    Accéder à la version complète
+                  </a>
+                </Button>
+                <div className="mt-6 text-left text-sm text-muted-foreground space-y-2">
+                  <p className="font-semibold text-foreground">
+                    {PACK_NAME} – {PACK_PRICE}
+                  </p>
+                  <p>Accès {PACK_DURATION}</p>
+                  <p>Paiement 100 % sécurisé via Stripe</p>
+                  <p>Accès immédiat après paiement</p>
+                  <p>Sans engagement</p>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </>
     );
   }
 
-  if (!user && showSignupPrompt && (state === "results" || state === "timeUp")) {
+  if (showPaywall && (state === "results" || state === "timeUp")) {
     return (
-      <Dialog open={showSignupPrompt} onOpenChange={setShowSignupPrompt}>
+      <Dialog open={showPaywall} onOpenChange={setShowPaywall}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Inscription obligatoire</DialogTitle>
+            <DialogTitle>Accès limité</DialogTitle>
             <DialogDescription>
-              Vous avez déjà passé un QCM. Inscrivez-vous pour refaire un test et consulter vos résultats.
+              Vous avez utilisé vos {freeLimit} quiz gratuits. Pour continuer à vous entraîner et accéder à tous les
+              quiz, passez au {PACK_NAME} – {PACK_PRICE}.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button asChild>
-              <Link href="/inscription">S'inscrire</Link>
-            </Button>
-            <Button asChild variant="outline">
-              <Link href="/login">Se connecter</Link>
+              <a href={paymentLink} target="_blank" rel="noopener noreferrer">
+                Accéder à la version complète
+              </a>
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -290,99 +296,143 @@ export default function TimedExam() {
 
   if (state === "timeUp") {
     return (
-      <div className="question-card p-8 text-center max-w-2xl mx-auto animate-scale-in">
-        <div className="w-20 h-20 rounded-full bg-destructive/10 flex items-center justify-center mx-auto mb-6">
-          <Clock className="w-10 h-10 text-destructive" />
-        </div>
-        
-        <h2 className="text-2xl font-bold mb-2">{t('exam.timeUp')}</h2>
-        <p className="text-muted-foreground mb-6">{t('exam.timeUpDesc')}</p>
-
-        <div className={cn(
-          "inline-flex items-center gap-2 px-6 py-3 rounded-full text-xl font-bold mb-8",
-          finalScore >= PASSING_SCORE ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive"
-        )}>
-          {finalScore} / {TOTAL_QUESTIONS}
-        </div>
-
-        <div className="grid grid-cols-2 gap-4 mb-8 text-sm">
-          <div className="p-4 bg-success/10 rounded-lg">
-            <CheckCircle2 className="w-5 h-5 text-success mx-auto mb-1" />
-            <span className="font-semibold text-success">{finalScore} {t('quiz.goodAnswers')}</span>
+      <>
+        <div className="question-card p-8 text-center max-w-2xl mx-auto animate-scale-in">
+          <div className="w-20 h-20 rounded-full bg-destructive/10 flex items-center justify-center mx-auto mb-6">
+            <Clock className="w-10 h-10 text-destructive" />
           </div>
-          <div className="p-4 bg-destructive/10 rounded-lg">
-            <XCircle className="w-5 h-5 text-destructive mx-auto mb-1" />
-            <span className="font-semibold text-destructive">{TOTAL_QUESTIONS - finalScore} {t('quiz.errors')}</span>
+          
+          <h2 className="text-2xl font-bold mb-2">{t('exam.timeUp')}</h2>
+          <p className="text-muted-foreground mb-6">{t('exam.timeUpDesc')}</p>
+
+          <div className={cn(
+            "inline-flex items-center gap-2 px-6 py-3 rounded-full text-xl font-bold mb-8",
+            finalScore >= PASSING_SCORE ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive"
+          )}>
+            {finalScore} / {TOTAL_QUESTIONS}
+          </div>
+
+          <div className="grid grid-cols-2 gap-4 mb-8 text-sm">
+            <div className="p-4 bg-success/10 rounded-lg">
+              <CheckCircle2 className="w-5 h-5 text-success mx-auto mb-1" />
+              <span className="font-semibold text-success">{finalScore} {t('quiz.goodAnswers')}</span>
+            </div>
+            <div className="p-4 bg-destructive/10 rounded-lg">
+              <XCircle className="w-5 h-5 text-destructive mx-auto mb-1" />
+              <span className="font-semibold text-destructive">{TOTAL_QUESTIONS - finalScore} {t('quiz.errors')}</span>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Button onClick={() => setState("review")} variant="outline" className="gap-2">
+              {t('quiz.viewAnswers')}
+            </Button>
+            <Button onClick={initExam} className="gap-2">
+              <RotateCcw className="w-4 h-4" />
+              {t('quiz.restart')}
+            </Button>
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <Button onClick={() => setState("review")} variant="outline" className="gap-2">
-            {t('quiz.viewAnswers')}
-          </Button>
-          <Button onClick={initExam} className="gap-2">
-            <RotateCcw className="w-4 h-4" />
-            {t('quiz.restart')}
-          </Button>
-        </div>
-      </div>
+        <Dialog open={showSignupPrompt} onOpenChange={setShowSignupPrompt}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Créez votre compte</DialogTitle>
+              <DialogDescription>
+                Vous venez de terminer votre premier quiz. Créez un compte pour sauvegarder vos résultats et continuer
+                votre préparation.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button asChild>
+                <Link href="/inscription">S&apos;inscrire</Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link href="/login">Se connecter</Link>
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </>
     );
   }
 
   if (state === "results") {
     return (
-      <div className="question-card p-8 text-center max-w-2xl mx-auto animate-scale-in">
-        <div className={cn(
-          "w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6",
-          isPassed ? "bg-success/10" : "bg-destructive/10"
-        )}>
-          {isPassed ? (
-            <Trophy className="w-10 h-10 text-success" />
-          ) : (
-            <XCircle className="w-10 h-10 text-destructive" />
-          )}
-        </div>
-        
-        <h2 className="text-2xl font-bold mb-2">
-          {isPassed ? t('quiz.congratulations') : t('quiz.keepStudying')}
-        </h2>
-        
-        <p className="text-muted-foreground mb-4">
-          {isPassed ? t('quiz.passed') : t('quiz.failed')}
-        </p>
-
-        <div className="text-sm text-muted-foreground mb-6">
-          {t('exam.timeRemaining')}: {formatTime(timeLeft)}
-        </div>
-
-        <div className={cn(
-          "inline-flex items-center gap-2 px-6 py-3 rounded-full text-xl font-bold mb-8",
-          isPassed ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive"
-        )}>
-          {finalScore} / {TOTAL_QUESTIONS}
-        </div>
-
-        <div className="grid grid-cols-2 gap-4 mb-8 text-sm">
-          <div className="p-4 bg-success/10 rounded-lg">
-            <CheckCircle2 className="w-5 h-5 text-success mx-auto mb-1" />
-            <span className="font-semibold text-success">{finalScore} {t('quiz.goodAnswers')}</span>
+      <>
+        <div className="question-card p-8 text-center max-w-2xl mx-auto animate-scale-in">
+          <div className={cn(
+            "w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6",
+            isPassed ? "bg-success/10" : "bg-destructive/10"
+          )}>
+            {isPassed ? (
+              <Trophy className="w-10 h-10 text-success" />
+            ) : (
+              <XCircle className="w-10 h-10 text-destructive" />
+            )}
           </div>
-          <div className="p-4 bg-destructive/10 rounded-lg">
-            <XCircle className="w-5 h-5 text-destructive mx-auto mb-1" />
-            <span className="font-semibold text-destructive">{TOTAL_QUESTIONS - finalScore} {t('quiz.errors')}</span>
+          
+          <h2 className="text-2xl font-bold mb-2">
+            {isPassed ? t('quiz.congratulations') : t('quiz.keepStudying')}
+          </h2>
+          
+          <p className="text-muted-foreground mb-4">
+            {isPassed ? t('quiz.passed') : t('quiz.failed')}
+          </p>
+
+          <div className="text-sm text-muted-foreground mb-6">
+            {t('exam.timeRemaining')}: {formatTime(timeLeft)}
+          </div>
+
+          <div className={cn(
+            "inline-flex items-center gap-2 px-6 py-3 rounded-full text-xl font-bold mb-8",
+            isPassed ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive"
+          )}>
+            {finalScore} / {TOTAL_QUESTIONS}
+          </div>
+
+          <div className="grid grid-cols-2 gap-4 mb-8 text-sm">
+            <div className="p-4 bg-success/10 rounded-lg">
+              <CheckCircle2 className="w-5 h-5 text-success mx-auto mb-1" />
+              <span className="font-semibold text-success">{finalScore} {t('quiz.goodAnswers')}</span>
+            </div>
+            <div className="p-4 bg-destructive/10 rounded-lg">
+              <XCircle className="w-5 h-5 text-destructive mx-auto mb-1" />
+              <span className="font-semibold text-destructive">{TOTAL_QUESTIONS - finalScore} {t('quiz.errors')}</span>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Button onClick={() => setState("review")} variant="outline" className="gap-2">
+              {t('quiz.viewAnswers')}
+            </Button>
+            <Button onClick={initExam} className="gap-2">
+              <RotateCcw className="w-4 h-4" />
+              {t('quiz.restart')}
+            </Button>
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <Button onClick={() => setState("review")} variant="outline" className="gap-2">
-            {t('quiz.viewAnswers')}
-          </Button>
-          <Button onClick={initExam} className="gap-2">
-            <RotateCcw className="w-4 h-4" />
-            {t('quiz.restart')}
-          </Button>
-        </div>
-      </div>
+        <Dialog open={showSignupPrompt} onOpenChange={setShowSignupPrompt}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Créez votre compte</DialogTitle>
+              <DialogDescription>
+                Vous venez de terminer votre premier quiz. Créez un compte pour sauvegarder vos résultats et continuer
+                votre préparation.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button asChild>
+                <Link href="/inscription">S&apos;inscrire</Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link href="/login">Se connecter</Link>
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </>
     );
   }
 

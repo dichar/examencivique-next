@@ -25,6 +25,16 @@ export default function ConditionsPage() {
             règles applicables.
           </p>
           <p>
+            Paiement : le Pack Réussite donne accès pendant 3 mois. Le renouvellement n’est pas automatique.
+          </p>
+          <p>
+            Remboursement : aucun remboursement n’est prévu, deux quiz gratuits permettent d’essayer le service.
+          </p>
+          <p>
+            Responsabilité : nous ne garantissons pas l’absence d’erreurs ou d’interruptions, et notre responsabilité
+            est limitée au montant payé.
+          </p>
+          <p>
             Nous pouvons mettre à jour ces conditions à tout moment. La poursuite de l’utilisation vaut acceptation des
             modifications.
           </p>

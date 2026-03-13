@@ -7,6 +7,8 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { cn } from "@/lib/utils";
 import { CheckCircle2, XCircle, Volume2, ChevronLeft, ChevronRight, RotateCcw } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
+import { useQuizAccess } from "@/hooks/useQuizAccess";
+import { buildStripePaymentLink, PACK_DURATION, PACK_NAME, PACK_PRICE } from "@/lib/payments";
 
 type RawQuestion = {
   question: string;
@@ -128,24 +130,15 @@ export default function QuizEngine({
   const [answers, setAnswers] = useState<Record<string, AnswerState>>({});
   const [instantCorrection, setInstantCorrection] = useState(true);
   const [state, setState] = useState<"playing" | "results">("playing");
+  const { user, profile } = useAuth();
+  const { count, hasAccess, requiresSignup, freeLimit, increment } = useQuizAccess(user, profile);
+  const [showPaywall, setShowPaywall] = useState(false);
   const [showSignupPrompt, setShowSignupPrompt] = useState(false);
-  const [isLocked, setIsLocked] = useState(false);
-  const { user } = useAuth();
-  const QUIZ_COUNT_KEY = `examencivique.quizCount.${quizKey}`;
 
   const initializeSession = useCallback(() => {
-    if (!user) {
-      try {
-        const raw = localStorage.getItem(QUIZ_COUNT_KEY);
-        const count = Number.parseInt(raw || "0", 10);
-        if (Number.isFinite(count) && count >= 1) {
-          setIsLocked(true);
-          setShowSignupPrompt(true);
-          return;
-        }
-      } catch {
-        // ignore storage failures
-      }
+    if (!hasAccess) {
+      setShowPaywall(true);
+      return;
     }
     let pool = normalized;
     if (mode === "errors") {
@@ -170,26 +163,16 @@ export default function QuizEngine({
     setCurrentIndex(0);
     setAnswers({});
     setState("playing");
-  }, [mode, normalized, questionsPerSession, user]);
+    setShowPaywall(false);
+    setShowSignupPrompt(false);
+  }, [hasAccess, mode, normalized, questionsPerSession]);
 
   useEffect(() => {
     if (normalized.length === 0) return;
     initializeSession();
   }, [initializeSession, normalized.length, mode, questionsPerSession, quizKey]);
 
-  useEffect(() => {
-    if (user) return;
-    try {
-      const raw = localStorage.getItem(QUIZ_COUNT_KEY);
-      const count = Number.parseInt(raw || "0", 10);
-      if (Number.isFinite(count) && count >= 1) {
-        setIsLocked(true);
-        setShowSignupPrompt(true);
-      }
-    } catch {
-      // ignore storage failures
-    }
-  }, [user]);
+  const paymentLink = buildStripePaymentLink(user);
 
   const currentQuestion = questions[currentIndex];
   const currentAnswer = currentQuestion ? answers[currentQuestion.id] : undefined;
@@ -229,19 +212,12 @@ export default function QuizEngine({
       setCurrentIndex((prev) => prev + 1);
     } else {
       setState("results");
-      if (!user) {
-        try {
-          const raw = localStorage.getItem(QUIZ_COUNT_KEY);
-          const count = Number.parseInt(raw || "0", 10);
-          const nextCount = Number.isFinite(count) ? count + 1 : 1;
-          localStorage.setItem(QUIZ_COUNT_KEY, String(nextCount));
-          if (nextCount >= 1) {
-            setShowSignupPrompt(true);
-            setIsLocked(true);
-          }
-        } catch {
-          // ignore storage failures
-        }
+      const nextCount = count + 1;
+      increment();
+      if (user && nextCount >= freeLimit) {
+        setShowPaywall(true);
+      } else if (!user && nextCount >= 1) {
+        setShowSignupPrompt(true);
       }
     }
   };
@@ -280,43 +256,70 @@ export default function QuizEngine({
     );
   }
 
-  if (isLocked && state !== "results") {
+  if (!hasAccess && state !== "results") {
     return (
       <>
-        <Dialog open={showSignupPrompt} onOpenChange={setShowSignupPrompt}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Inscription obligatoire</DialogTitle>
-              <DialogDescription>
-                Vous avez déjà passé un QCM. Inscrivez-vous pour refaire un test et consulter vos résultats.
-              </DialogDescription>
-            </DialogHeader>
-            <DialogFooter>
-              <Button asChild>
-                <Link href="/inscription">S'inscrire</Link>
-              </Button>
-              <Button asChild variant="outline">
-                <Link href="/login">Se connecter</Link>
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-
-        {!showSignupPrompt && (
+        {requiresSignup ? (
           <div className="question-card p-8 text-center max-w-2xl mx-auto">
-            <h2 className="text-2xl font-bold mb-2">Accès limité</h2>
+            <h2 className="text-2xl font-bold mb-2">Créez votre compte</h2>
             <p className="text-muted-foreground mb-6">
-              Vous avez déjà passé un QCM. Inscrivez-vous ou connectez-vous pour continuer.
+              Vous avez terminé votre premier quiz. Créez un compte pour sauvegarder vos résultats et continuer votre
+              préparation.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button asChild>
-                <Link href="/inscription">S'inscrire</Link>
+                <Link href="/inscription">S&apos;inscrire</Link>
               </Button>
               <Button asChild variant="outline">
                 <Link href="/login">Se connecter</Link>
               </Button>
             </div>
           </div>
+        ) : (
+          <>
+            <Dialog open={showPaywall} onOpenChange={setShowPaywall}>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Accès limité</DialogTitle>
+                  <DialogDescription>
+                    Vous avez utilisé vos {freeLimit} quiz gratuits. Pour continuer à vous entraîner et accéder à tous
+                    les quiz, passez au {PACK_NAME} – {PACK_PRICE}.
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                  <Button asChild>
+                    <a href={paymentLink} target="_blank" rel="noopener noreferrer">
+                      Accéder à la version complète
+                    </a>
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+
+            {!showPaywall && (
+              <div className="question-card p-8 text-center max-w-2xl mx-auto">
+                <h2 className="text-2xl font-bold mb-2">Accès limité</h2>
+                <p className="text-muted-foreground mb-6">
+                  Vous avez utilisé vos {freeLimit} quiz gratuits. Pour continuer à vous entraîner et accéder à tous les
+                  quiz, passez au {PACK_NAME} – {PACK_PRICE}.
+                </p>
+                <Button asChild>
+                  <a href={paymentLink} target="_blank" rel="noopener noreferrer">
+                    Accéder à la version complète
+                  </a>
+                </Button>
+                <div className="mt-6 text-left text-sm text-muted-foreground space-y-2">
+                  <p className="font-semibold text-foreground">
+                    {PACK_NAME} – {PACK_PRICE}
+                  </p>
+                  <p>Accès {PACK_DURATION}</p>
+                  <p>Paiement 100 % sécurisé via Stripe</p>
+                  <p>Accès immédiat après paiement</p>
+                  <p>Sans engagement</p>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </>
     );
@@ -338,17 +341,36 @@ export default function QuizEngine({
             <Link href="/questions">Voir toutes les questions</Link>
           </Button>
         </div>
-        <Dialog open={showSignupPrompt} onOpenChange={setShowSignupPrompt}>
+        <Dialog open={showPaywall} onOpenChange={setShowPaywall}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Inscription obligatoire</DialogTitle>
+              <DialogTitle>Accès limité</DialogTitle>
               <DialogDescription>
-                Vous avez déjà passé un QCM. Inscrivez-vous pour refaire un test et consulter vos résultats.
+                Vous avez utilisé vos {freeLimit} quiz gratuits. Pour continuer à vous entraîner et accéder à tous les
+                quiz, passez au {PACK_NAME} – {PACK_PRICE}.
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>
               <Button asChild>
-                <Link href="/inscription">S'inscrire</Link>
+                <a href={paymentLink} target="_blank" rel="noopener noreferrer">
+                  Accéder à la version complète
+                </a>
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+        <Dialog open={showSignupPrompt} onOpenChange={setShowSignupPrompt}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Créez votre compte</DialogTitle>
+              <DialogDescription>
+                Vous venez de terminer votre premier quiz. Créez un compte pour sauvegarder vos résultats et continuer
+                votre préparation.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button asChild>
+                <Link href="/inscription">S&apos;inscrire</Link>
               </Button>
               <Button asChild variant="outline">
                 <Link href="/login">Se connecter</Link>
