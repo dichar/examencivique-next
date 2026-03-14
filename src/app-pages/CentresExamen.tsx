@@ -112,7 +112,7 @@ export default function CentresExamen() {
             <div className="text-center py-8">
               <h3 className="text-xl font-bold mb-4">Préparez-vous avant l'examen</h3>
               <p className="text-muted-foreground mb-6">
-                Entraînez-vous avec notre simulateur gratuit pour maximiser vos chances de réussite.
+                Entraînez-vous avec 2 quiz gratuits, puis le Pack Réussite (3 mois) pour maximiser vos chances.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button asChild size="lg">

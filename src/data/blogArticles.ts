@@ -150,7 +150,7 @@ Certains sujets reviennent fréquemment :
 
 ## Conclusion
 
-Avec une bonne préparation et de la confiance, vous réussirez l'examen civique. Utilisez notre simulateur gratuit pour vous entraîner dans les conditions réelles !
+Avec une bonne préparation et de la confiance, vous réussirez l'examen civique. Utilisez notre simulateur avec 2 quiz gratuits pour vous entraîner dans les conditions réelles !
     `
   },
   {
@@ -1346,7 +1346,7 @@ La carte de séjour pluriannuelle est une étape importante de votre parcours en
 ## Conseils Pratiques
 
 ### Pour l'Examen Civique
-- Utiliser notre simulateur gratuit
+- Utiliser notre simulateur (2 quiz gratuits)
 - Réviser régulièrement
 - Connaître les 5 thématiques
 
@@ -1362,17 +1362,17 @@ La carte de séjour pluriannuelle récompense votre engagement d'intégration. P
   },
   {
     slug: "test-blanc-examen-civique-gratuit",
-    title: "Test Blanc Examen Civique 2026 : Entraînement gratuit + score 32/40",
+    title: "Test Blanc Examen Civique 2026 : 2 quiz gratuits + score 32/40",
     excerpt: "Passez un test blanc complet pour vous préparer à l'examen civique dans les conditions réelles.",
     category: "Entraînement",
     date: "2024-11-15",
     readTime: 5,
-    metaDescription: "Test blanc gratuit pour l'examen civique. 40 questions, 45 minutes, conditions réelles. Entraînez-vous maintenant !",
-    keywords: ["test blanc", "gratuit", "examen civique", "entraînement", "simulation"],
+    metaDescription: "Test blanc pour l'examen civique : 2 quiz gratuits pour démarrer. 40 questions, 45 minutes, conditions réelles. Entraînez-vous maintenant !",
+    keywords: ["test blanc", "2 quiz gratuits", "examen civique", "entraînement", "simulation"],
     content: `
-# Test Blanc Examen Civique 2026 : Entraînement gratuit + score 32/40
+# Test Blanc Examen Civique 2026 : 2 quiz gratuits + score 32/40
 
-Préparez-vous à l'examen civique avec notre test blanc gratuit !
+Préparez-vous à l'examen civique avec notre test blanc : 2 quiz gratuits pour démarrer !
 
 ## Pourquoi Passer un Test Blanc ?
 
@@ -1456,10 +1456,10 @@ Utilisez nos ressources et refaites le test régulièrement.
 - Questions officielles
 - Timer intégré
 - Correction détaillée
-- 100% gratuit
+- 2 quiz gratuits
 
 ### Accès
-Rendez-vous sur notre page d'accueil et cliquez sur "Commencer le test gratuit" !
+Rendez-vous sur notre page d'accueil et cliquez sur "Commencer le test (2 quiz gratuits)" !
 
 ## Conclusion
 

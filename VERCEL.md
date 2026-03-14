@@ -1,4 +1,4 @@
-# Déploiement Vercel (gratuit)
+# Déploiement Vercel
 
 ## 1) Préparer le repo
 Depuis `/opt/perso/examencivique-next` :
@@ -25,7 +25,7 @@ git push -u origin main
 4. Build command: `next build`
 5. Output: auto
 
-Vercel fournira un domaine gratuit `*.vercel.app`.
+Vercel fournit un domaine `*.vercel.app` (plan free possible).
 
 ## 4) (Optionnel) Domaine personnalisé
 Ajoute ton domaine dans Vercel > Project Settings > Domains.

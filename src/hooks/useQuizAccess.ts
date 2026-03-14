@@ -5,7 +5,7 @@ import type { User } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase/client";
 import type { Profile } from "@/components/AuthProvider";
 
-const FREE_LIMIT = 1;
+const FREE_LIMIT = 2;
 const ANON_LIMIT = 1;
 const COUNT_KEY = "examencivique.quizCount.total";
 
@@ -36,7 +36,11 @@ export const useQuizAccess = (user: User | null, profile: Profile | null) => {
       paidUntilDate !== null &&
       paidUntilDate > new Date();
 
-    const effectiveCount = user ? metaCount : localCount;
+    let effectiveCount = user ? metaCount : localCount;
+    if (user && localCount > metaCount) {
+      effectiveCount = localCount;
+      supabase.from("profiles").update({ free_quiz_used: localCount }).eq("id", user.id).then(() => {});
+    }
     setCount(effectiveCount);
     setPaid(Boolean(user) && isPaidActive);
   }, [user, profile]);
@@ -72,7 +76,7 @@ export const useQuizAccess = (user: User | null, profile: Profile | null) => {
     paid,
     hasAccess,
     requiresSignup,
-    freeLimit: FREE_LIMIT,
+    freeLimit: user ? FREE_LIMIT : ANON_LIMIT,
     increment,
   };
 };

@@ -21,7 +21,7 @@ export default function About() {
             </h1>
             
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Un outil gratuit pour vous aider à réussir l'examen civique 
+              Un outil d'entraînement avec <strong>2 quiz gratuits</strong> pour vous aider à réussir l'examen civique 
               du Contrat d'Intégration Républicaine.
             </p>
           </div>
@@ -36,8 +36,8 @@ export default function About() {
               <div className="prose prose-lg max-w-none">
                 <p className="text-muted-foreground leading-relaxed">
                   ExamenCivique.info a été créé pour aider les personnes préparant l'examen civique 
-                  français à s'entraîner efficacement et <strong>gratuitement</strong>. Notre objectif 
-                  est de rendre accessible à tous une préparation de qualité.
+                  français à s'entraîner efficacement. Nous offrons <strong>2 quiz gratuits</strong> pour tester la
+                  plateforme, puis un accès complet via le Pack Réussite (3 mois).
                 </p>
                 <p className="text-muted-foreground leading-relaxed">
                   Nous croyons que l'intégration passe par la connaissance et la compréhension 
@@ -115,7 +115,7 @@ export default function About() {
             <div className="text-center py-8">
               <h3 className="text-xl font-bold mb-4">Prêt à commencer ?</h3>
               <p className="text-muted-foreground mb-6">
-                Lancez-vous dans un entraînement complet avec notre simulateur gratuit.
+                Lancez-vous dans un entraînement complet avec 2 quiz gratuits, puis le Pack Réussite (3 mois).
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button asChild size="lg">

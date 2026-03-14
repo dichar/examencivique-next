@@ -7,9 +7,9 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 
 const siteUrl = "https://www.examencivique.info";
 const siteName = "ExamenCivique.info";
-const defaultTitle = "Examen civique 2026 gratuit QCM : Test et 40 Questions Officielles";
+const defaultTitle = "Examen civique 2026 : 2 quiz gratuits + Pack 3 mois (QCM OFII)";
 const defaultDescription =
-  "Examen civique 2026 gratuit QCM : entraînement en conditions réelles, 40 questions officielles de l'OFII et score minimum 32/40.";
+  "Préparez l'examen civique 2026 : 2 quiz gratuits pour tester, puis Pack Réussite (3 mois). 40 questions officielles, 45 minutes, score minimum 32/40.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

@@ -3,7 +3,7 @@ import AboutPage from "@/app-pages/About";
 export const metadata = {
   title: "À Propos | ExamenCivique.info - Préparation au Test Civique OFII",
   description:
-    "ExamenCivique.info est un site d'entraînement gratuit pour l'examen civique français. Questions 100% officielles du Ministère de l'Intérieur. Découvrez notre mission.",
+    "ExamenCivique.info est un site d'entraînement avec 2 quiz gratuits, puis Pack Réussite (3 mois). Questions 100% officielles du Ministère de l'Intérieur. Découvrez notre mission.",
   keywords: [
     "à propos examen civique",
     "simulateur examen civique",

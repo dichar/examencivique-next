@@ -45,6 +45,10 @@ export const homeFaqItems: FAQItem[] = [
     answer: "Oui, l'examen civique est entièrement gratuit dans le cadre du Contrat d'Intégration Républicaine (CIR). Aucun frais d'inscription ni de passage n'est demandé par l'OFII.",
   },
   {
+    question: "Le simulateur ExamenCivique.info est-il gratuit ?",
+    answer: "Vous disposez de 2 quiz gratuits pour tester. Ensuite, le Pack Réussite (3 mois) donne un accès complet à tous les quiz.",
+  },
+  {
     question: "Où se passe l'examen civique ?",
     answer: "L'examen civique se passe en présentiel dans un centre d'examen agréé par l'OFII. Vous recevrez une convocation par courrier indiquant la date, l'heure et le lieu exact. L'examen se fait sur tablette ou ordinateur.",
   },
@@ -58,7 +62,7 @@ export const homeFaqItems: FAQItem[] = [
   },
   {
     question: "Comment se préparer efficacement à l'examen civique ?",
-    answer: "La meilleure préparation est de s'entraîner avec les questions officielles. Notre simulateur gratuit reproduit les conditions réelles de l'examen avec les 1800+ questions publiées par le Ministère de l'Intérieur, réparties selon les quotas officiels.",
+    answer: "La meilleure préparation est de s'entraîner avec les questions officielles. Notre simulateur propose 2 quiz gratuits puis un accès complet via le Pack Réussite, avec les 1800+ questions publiées par le Ministère de l'Intérieur, réparties selon les quotas officiels.",
   },
   {
     question: "Les questions de l'examen civique changent-elles ?",

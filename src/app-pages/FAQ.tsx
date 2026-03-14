@@ -24,8 +24,12 @@ const faqItems = [
     answer: "L'examen civique est entièrement gratuit dans le cadre du Contrat d'Intégration Républicaine (CIR). Aucun frais d'inscription ni de passage n'est demandé.",
   },
   {
+    question: "Le simulateur ExamenCivique.info est-il gratuit ?",
+    answer: "Vous disposez de 2 quiz gratuits pour tester la plateforme. Ensuite, le Pack Réussite (3 mois) donne un accès complet à tous les quiz.",
+  },
+  {
     question: "Peut-on passer l'examen civique en ligne ?",
-    answer: "Non, l'examen civique doit être passé en présentiel dans un centre d'examen agréé par l'OFII. Il se fait sur tablette ou ordinateur dans le centre. En revanche, vous pouvez vous entraîner en ligne gratuitement sur ExamenCivique.info avec les questions officielles !",
+    answer: "Non, l'examen civique doit être passé en présentiel dans un centre d'examen agréé par l'OFII. Il se fait sur tablette ou ordinateur dans le centre. En revanche, vous pouvez vous entraîner en ligne sur ExamenCivique.info avec 2 quiz gratuits, puis le Pack Réussite.",
   },
   {
     question: "Que se passe-t-il si j'échoue à l'examen ?",

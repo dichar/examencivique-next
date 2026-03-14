@@ -181,7 +181,7 @@ export default function PreparationInscription() {
             <div className="text-center py-8">
               <h3 className="text-xl font-bold mb-4">Commencez votre entraînement</h3>
               <p className="text-muted-foreground mb-6">
-                Testez vos connaissances dès maintenant avec notre simulateur gratuit.
+                Testez vos connaissances dès maintenant avec 2 quiz gratuits, puis le Pack Réussite (3 mois).
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button asChild size="lg">

@@ -26,15 +26,15 @@ export default function Index() {
   const webAppSchema = {
     "@context": "https://schema.org",
     "@type": "WebApplication",
-    name: "Examen Civique - Simulateur QCM Gratuit",
+    name: "Examen Civique - Simulateur QCM (2 quiz gratuits)",
     description:
-      "Examen civique 2026 gratuit QCM : entraînement en conditions réelles avec questions officielles du Ministère de l'Intérieur",
+      "Examen civique 2026 : entraînement en conditions réelles avec 2 quiz gratuits, puis Pack Réussite (3 mois). Questions officielles du Ministère de l'Intérieur",
     url: "https://www.examencivique.info",
     applicationCategory: "EducationalApplication",
     operatingSystem: "All",
     offers: {
       "@type": "Offer",
-      price: "0",
+      price: "19.99",
       priceCurrency: "EUR",
     },
     aggregateRating: {
@@ -79,7 +79,7 @@ export default function Index() {
       {
         "@type": "HowToStep",
         name: "S'entraîner avec le simulateur",
-        text: "Utilisez notre simulateur gratuit avec les questions officielles du Ministère de l'Intérieur.",
+        text: "Utilisez notre simulateur avec 2 quiz gratuits, puis un accès complet via le Pack Réussite.",
       },
       {
         "@type": "HowToStep",
@@ -106,13 +106,16 @@ export default function Index() {
 
           {/* H1 - Single, keyword-rich */}
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 text-balance animate-fade-in">
-            Préparez l'Examen Civique 2026 – Simulateur Gratuit 40 Questions OFII
+            Préparez l'Examen Civique 2026 – 2 Quiz Gratuits + Pack 3 mois
           </h1>
 
           {/* AEO-optimized intro paragraph - direct answer format */}
           <p className="text-lg sm:text-xl text-white/90 leading-relaxed mb-6 max-w-2xl mx-auto animate-fade-in">
             L'examen civique est un test obligatoire de <strong>40 questions QCM</strong> pour obtenir votre carte de
             séjour en France. Score minimum : <strong>32/40 (80%)</strong>. Exercez-vous à l'examen civique en situation réelle.
+          </p>
+          <p className="text-sm sm:text-base text-white/80 max-w-2xl mx-auto mb-8 animate-fade-in">
+            2 quiz gratuits pour tester. Ensuite, le Pack Réussite (3 mois) débloque l'accès complet.
           </p>
           <p className="text-sm sm:text-base text-white/80 max-w-2xl mx-auto mb-8 animate-fade-in">
             Site de préparation indépendant. Informations basées sur le{" "}
@@ -217,7 +220,7 @@ export default function Index() {
               Testez-vous en Conditions Réelles (45 min, 40 questions)
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto mb-6">
-              Simulateur gratuit calqué sur l'examen officiel : 40 questions, 45 minutes, score minimum 32/40.
+              Simulateur avec 2 quiz gratuits calqué sur l'examen officiel : 40 questions, 45 minutes, score minimum 32/40.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <a
@@ -488,10 +491,10 @@ export default function Index() {
                   <h3 className="text-xl font-semibold text-foreground mb-3">Comment bien se préparer ?</h3>
                   <p className="leading-relaxed">
                     La préparation à l'examen civique nécessite une révision méthodique des 1800+ questions
-                    publiées par le Ministère de l'Intérieur. Notre simulateur gratuit reproduit les conditions réelles
-                    de l'examen avec des questions aléatoires à chaque session. Nous vous recommandons de vous entraîner
-                    régulièrement, idéalement 15 à 20 minutes par jour, pendant les deux semaines précédant votre
-                    convocation.
+                    publiées par le Ministère de l'Intérieur. Notre simulateur propose 2 quiz gratuits puis un accès complet
+                    via le Pack Réussite. Il reproduit les conditions réelles de l'examen avec des questions aléatoires à
+                    chaque session. Nous vous recommandons de vous entraîner régulièrement, idéalement 15 à 20 minutes par
+                    jour, pendant les deux semaines précédant votre convocation.
                   </p>
                   <p className="leading-relaxed mt-3">
                     Les thèmes les plus importants à maîtriser sont la <strong>laïcité</strong>, la{" "}
@@ -534,8 +537,7 @@ export default function Index() {
                     Ces changements renforcent l'importance d'une bonne préparation. Notre plateforme est régulièrement
                     mise à jour pour refléter les dernières questions officielles du Ministère de l'Intérieur. Utilisez
                     notre simulateur pour vous familiariser avec le format QCM et acquérir les réflexes nécessaires le
-                    jour J. L'entraînement est
-                    <strong> 100% gratuit et illimité</strong>.
+                    jour J. L'entraînement commence avec 2 quiz gratuits puis se poursuit via le Pack Réussite (3 mois).
                   </p>
                 </article>
               </div>
@@ -563,7 +565,7 @@ export default function Index() {
               Mettez-vous en condition réelle pour réussir l'examen civique
             </h2>
             <p className="text-white/90 mb-8 max-w-xl mx-auto">
-              Simulateur gratuit basé sur les 40 questions de l'examen réel. Entraînez-vous autant de fois que nécessaire.
+              Simulateur basé sur les 40 questions de l'examen réel. 2 quiz gratuits pour démarrer, puis Pack Réussite (3 mois).
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
@@ -571,7 +573,7 @@ export default function Index() {
                 className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-primary font-bold rounded-xl hover:bg-white/90 transition-colors"
               >
                 <Target className="w-5 h-5" />
-                Commencer le test gratuit
+                Commencer le test (2 quiz gratuits)
               </a>
               <Link
                 href="/questions"

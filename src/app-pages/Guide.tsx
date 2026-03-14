@@ -29,7 +29,7 @@ export default function Guide() {
       {
         "@type": "HowToStep",
         "name": "S'entraîner avec le simulateur",
-        "text": "Pratiquez avec notre QCM gratuit pour mémoriser les réponses"
+        "text": "Pratiquez avec 2 quiz gratuits, puis le Pack Réussite pour mémoriser les réponses"
       },
       {
         "@type": "HowToStep",

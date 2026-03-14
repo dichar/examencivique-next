@@ -258,7 +258,7 @@ export default function BlogArticle({ slug }: { slug: string }) {
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link href="/entrainement">
                 <Button className="gap-2">
-                  Simulateur gratuit
+                  Simulateur (2 quiz gratuits)
                   <ArrowRight className="w-4 h-4" />
                 </Button>
               </Link>

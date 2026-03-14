@@ -24,9 +24,9 @@ export const translations: Record<Language, Record<string, string>> = {
     // Hero
     'hero.badge': 'Questions 100% officielles du Ministère de l\'Intérieur',
     'hero.title': 'Préparation Examen Civique',
-    'hero.free': 'Gratuit',
-    'hero.description': 'L\'examen civique est un test obligatoire de 40 questions QCM pour obtenir votre carte de séjour en France. Score minimum : 32/40 (80%). Entraînez-vous gratuitement avec les questions officielles.',
-    'hero.cta': 'Commencer le test gratuit',
+    'hero.free': '2 quiz gratuits',
+    'hero.description': 'L\'examen civique est un test obligatoire de 40 questions QCM pour obtenir votre carte de séjour en France. Score minimum : 32/40 (80%). Entraînez-vous avec 2 quiz gratuits, puis le Pack Réussite (3 mois).',
+    'hero.cta': 'Commencer le test (2 quiz gratuits)',
     
     // Stats
     'stats.questions': 'Questions QCM',
@@ -108,9 +108,9 @@ export const translations: Record<Language, Record<string, string>> = {
     // Hero
     'hero.badge': '100% Official Questions from the Ministry of Interior',
     'hero.title': 'Civic Exam Preparation',
-    'hero.free': 'Free',
-    'hero.description': 'The civic exam is a mandatory 40-question MCQ test to obtain your residence permit in France. Minimum score: 32/40 (80%). Practice for free with official questions.',
-    'hero.cta': 'Start Free Test',
+    'hero.free': '2 free quizzes',
+    'hero.description': 'The civic exam is a mandatory 40-question MCQ test to obtain your residence permit in France. Minimum score: 32/40 (80%). Practice with 2 free quizzes, then the 3-month Pack.',
+    'hero.cta': 'Start (2 free quizzes)',
     
     // Stats
     'stats.questions': 'MCQ Questions',
@@ -192,9 +192,9 @@ export const translations: Record<Language, Record<string, string>> = {
     // Hero
     'hero.badge': 'أسئلة رسمية 100% من وزارة الداخلية',
     'hero.title': 'التحضير للامتحان المدني',
-    'hero.free': 'مجاني',
-    'hero.description': 'الامتحان المدني هو اختبار إلزامي من 40 سؤالاً للحصول على بطاقة الإقامة في فرنسا. الحد الأدنى للنجاح: 32/40 (80%). تدرب مجاناً مع الأسئلة الرسمية.',
-    'hero.cta': 'ابدأ الاختبار المجاني',
+    'hero.free': 'اختباران مجانيان',
+    'hero.description': 'الامتحان المدني هو اختبار إلزامي من 40 سؤالاً للحصول على بطاقة الإقامة في فرنسا. الحد الأدنى للنجاح: 32/40 (80%). تدرب مع اختبارين مجانيين ثم باقة النجاح لمدة 3 أشهر.',
+    'hero.cta': 'ابدأ الاختبار (اختباران مجانيان)',
     
     // Stats
     'stats.questions': 'أسئلة اختيار متعدد',
