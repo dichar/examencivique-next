@@ -13,6 +13,9 @@ const defaultDescription =
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
+  other: {
+    "yandex-verification": "00355f4c88f8eac0",
+  },
   title: {
     default: defaultTitle,
     template: `%s | ${siteName}`,
