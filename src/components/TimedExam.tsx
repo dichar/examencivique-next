@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import PackPaywallDialog from "@/components/PackPaywallDialog";
 import { cn } from "@/lib/utils";
 import { CheckCircle2, XCircle, RotateCcw, Trophy, ArrowRight, ChevronLeft, ChevronRight, Clock, Timer } from "lucide-react";
 import confetti from "canvas-confetti";
@@ -258,24 +259,12 @@ export default function TimedExam() {
           </div>
         ) : (
           <>
-            <Dialog open={showPaywall} onOpenChange={setShowPaywall}>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Accès limité</DialogTitle>
-                  <DialogDescription>
-                    Vous avez utilisé vos {freeLimit} quiz gratuits. Pour continuer à vous entraîner et accéder à tous
-                    les quiz, passez au {PACK_NAME} – {PACK_PRICE}.
-                  </DialogDescription>
-                </DialogHeader>
-                <DialogFooter>
-                  <Button asChild>
-                    <a href={paymentLink} target="_blank" rel="noopener noreferrer">
-                      Accéder à la version complète
-                    </a>
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
+            <PackPaywallDialog
+              open={showPaywall}
+              onOpenChange={setShowPaywall}
+              freeLimit={freeLimit}
+              paymentLink={paymentLink}
+            />
 
             {!showPaywall && (
               <div className="question-card p-8 text-center max-w-2xl mx-auto">
@@ -308,24 +297,12 @@ export default function TimedExam() {
 
   if (showPaywall && (state === "results" || state === "timeUp")) {
     return (
-      <Dialog open={showPaywall} onOpenChange={setShowPaywall}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Accès limité</DialogTitle>
-            <DialogDescription>
-              Vous avez utilisé vos {freeLimit} quiz gratuits. Pour continuer à vous entraîner et accéder à tous les
-              quiz, passez au {PACK_NAME} – {PACK_PRICE}.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button asChild>
-              <a href={paymentLink} target="_blank" rel="noopener noreferrer">
-                Accéder à la version complète
-              </a>
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <PackPaywallDialog
+        open={showPaywall}
+        onOpenChange={setShowPaywall}
+        freeLimit={freeLimit}
+        paymentLink={paymentLink}
+      />
     );
   }
 

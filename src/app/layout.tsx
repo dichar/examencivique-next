@@ -9,7 +9,7 @@ const siteUrl = "https://www.examencivique.info";
 const siteName = "ExamenCivique.info";
 const defaultTitle = "Examen civique 2026 : 2 quiz gratuits + Pack 3 mois (QCM OFII)";
 const defaultDescription =
-  "Préparez l'examen civique 2026 : 2 quiz gratuits pour tester, puis Pack Réussite (3 mois). 40 questions officielles, 45 minutes, score minimum 32/40.";
+  "Préparez l'examen civique 2026 : 2 quiz gratuits puis Pack Réussite 3 mois. Accès illimité, QCM officiels CSP/CR/Naturalisation, suivi de progression, activation instantanée, paiement unique.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

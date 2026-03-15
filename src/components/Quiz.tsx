@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { Question, selectExamQuestions, themeColors, themeShortNames, PASSING_SCORE, TOTAL_QUESTIONS } from "@/lib/questions";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import PackPaywallDialog from "@/components/PackPaywallDialog";
 import { cn } from "@/lib/utils";
 import { CheckCircle2, XCircle, RotateCcw, Trophy, ChevronLeft, ChevronRight } from "lucide-react";
 import confetti from "canvas-confetti";
@@ -212,24 +213,12 @@ export default function Quiz() {
           </div>
         ) : (
           <>
-            <Dialog open={showPaywall} onOpenChange={setShowPaywall}>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Accès limité</DialogTitle>
-                  <DialogDescription>
-                    Vous avez utilisé vos {freeLimit} quiz gratuits. Pour continuer à vous entraîner et accéder à tous
-                    les quiz, passez au {PACK_NAME} – {PACK_PRICE}.
-                  </DialogDescription>
-                </DialogHeader>
-                <DialogFooter>
-                  <Button asChild>
-                    <a href={paymentLink} target="_blank" rel="noopener noreferrer">
-                      Accéder à la version complète
-                    </a>
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
+            <PackPaywallDialog
+              open={showPaywall}
+              onOpenChange={setShowPaywall}
+              freeLimit={freeLimit}
+              paymentLink={paymentLink}
+            />
 
             {!showPaywall && (
               <div className="question-card p-8 text-center max-w-2xl mx-auto">
@@ -243,14 +232,44 @@ export default function Quiz() {
                     Accéder à la version complète
                   </a>
                 </Button>
-                <div className="mt-6 text-left text-sm text-muted-foreground space-y-2">
-                  <p className="font-semibold text-foreground">
-                    {PACK_NAME} – {PACK_PRICE}
+                <div className="mt-6 text-left space-y-4">
+                  {/* En-tête de l'offre */}
+                  <div className="pb-2 border-b border-border">
+                    <p className="font-bold text-lg text-foreground">
+                      {PACK_NAME} – {PACK_PRICE}
+                    </p>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium">
+                      Tout ce dont vous avez besoin pour réussir
+                    </p>
+                  </div>
+
+                  {/* Liste des bénéfices */}
+                  <ul className="text-sm text-muted-foreground space-y-3">
+                    <li className="flex items-start">
+                      <span className="mr-2">✅</span>
+                      <span className="text-foreground"><strong>Accès illimité</strong> pendant 3 mois</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="mr-2">✅</span>
+                      <span><strong>Tous les QCM officiels</strong> : CSP, CR, Naturalisation</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="mr-2">✅</span>
+                      <span>Suivi de progression et <strong>score de réussite</strong></span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="mr-2">🚀</span>
+                      <span><strong>Activation instantanée</strong> de votre espace</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="mr-2">🛡️</span>
+                      <span>Paiement 100% sécurisé — <strong>Sans abonnement</strong></span>
+                    </li>
+                  </ul>
+
+                  <p className="text-xs italic text-muted-foreground/80 pt-2">
+                    * Payez une seule fois, aucun prélèvement automatique.
                   </p>
-                  <p>Accès {PACK_DURATION}</p>
-                  <p>Paiement 100 % sécurisé via Stripe</p>
-                  <p>Accès immédiat après paiement</p>
-                  <p>Sans engagement</p>
                 </div>
               </div>
             )}
@@ -318,24 +337,12 @@ export default function Quiz() {
           </div>
         </div>
 
-        <Dialog open={showPaywall} onOpenChange={setShowPaywall}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Accès limité</DialogTitle>
-              <DialogDescription>
-                Vous avez utilisé vos {freeLimit} quiz gratuits. Pour continuer à vous entraîner et accéder à tous les
-                quiz, passez au {PACK_NAME} – {PACK_PRICE}.
-              </DialogDescription>
-            </DialogHeader>
-            <DialogFooter>
-              <Button asChild>
-                <a href={paymentLink} target="_blank" rel="noopener noreferrer">
-                  Accéder à la version complète
-                </a>
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        <PackPaywallDialog
+          open={showPaywall}
+          onOpenChange={setShowPaywall}
+          freeLimit={freeLimit}
+          paymentLink={paymentLink}
+        />
         <Dialog open={showSignupPrompt} onOpenChange={setShowSignupPrompt}>
           <DialogContent>
             <DialogHeader>
