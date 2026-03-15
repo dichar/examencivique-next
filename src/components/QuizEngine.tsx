@@ -131,18 +131,22 @@ export default function QuizEngine({
   const [answers, setAnswers] = useState<Record<string, AnswerState>>({});
   const [instantCorrection, setInstantCorrection] = useState(true);
   const [state, setState] = useState<"playing" | "results">("playing");
-  const { user, profile } = useAuth();
-  const { count, paid, hasAccess, requiresSignup, freeLimit, increment } = useQuizAccess(user, profile);
+  const { user, profile, profileLoading } = useAuth();
+  const { count, paid, ready, hasAccess, requiresSignup, freeLimit, consumeAttempt } = useQuizAccess(
+    user,
+    profile,
+    profileLoading,
+  );
   const [showPaywall, setShowPaywall] = useState(false);
   const [showSignupPrompt, setShowSignupPrompt] = useState(false);
+  const [accessGranted, setAccessGranted] = useState(false);
+  const [accessChecked, setAccessChecked] = useState(false);
   const pathname = usePathname();
   const nextUrl = useMemo(() => encodeURIComponent(pathname), [pathname]);
 
   const initializeSession = useCallback(() => {
-    if (!hasAccess) {
-      setShowPaywall(true);
-      return;
-    }
+    setAccessGranted(false);
+    setAccessChecked(false);
     let pool = normalized;
     if (mode === "errors") {
       pool = normalized.filter((q) => errorRef.current.has(q.id));
@@ -168,7 +172,7 @@ export default function QuizEngine({
     setState("playing");
     setShowPaywall(false);
     setShowSignupPrompt(false);
-  }, [hasAccess, mode, normalized, questionsPerSession]);
+  }, [mode, normalized, questionsPerSession]);
 
   useEffect(() => {
     if (normalized.length === 0) return;
@@ -215,9 +219,7 @@ export default function QuizEngine({
       setCurrentIndex((prev) => prev + 1);
     } else {
       setState("results");
-      const nextCount = count + 1;
-      increment();
-      if (!paid && !user && nextCount >= 1) {
+      if (!paid && !user && count >= 1) {
         setShowSignupPrompt(true);
       }
     }
@@ -243,6 +245,35 @@ export default function QuizEngine({
     window.speechSynthesis.speak(utterance);
   };
 
+  useEffect(() => {
+    if (!ready || state !== "playing") return;
+    if (paid) {
+      setAccessGranted(true);
+      setAccessChecked(true);
+      return;
+    }
+    if (accessChecked) return;
+    if (!hasAccess) {
+      setShowPaywall(true);
+      setAccessChecked(true);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      const ok = await consumeAttempt();
+      if (cancelled) return;
+      if (ok) {
+        setAccessGranted(true);
+      } else {
+        setShowPaywall(true);
+      }
+      setAccessChecked(true);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [ready, state, accessChecked, paid, hasAccess, consumeAttempt]);
+
   if (mode === "errors" && errorSet.size === 0) {
     return (
       <div className="question-card p-8 text-center max-w-2xl mx-auto">
@@ -257,7 +288,15 @@ export default function QuizEngine({
     );
   }
 
-  if (!hasAccess && state === "playing") {
+  if (!ready) {
+    return null;
+  }
+
+  if (state === "playing" && !accessChecked) {
+    return null;
+  }
+
+  if (state === "playing" && !accessGranted) {
     return (
       <>
         {requiresSignup ? (

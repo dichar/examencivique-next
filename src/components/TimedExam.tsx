@@ -32,19 +32,22 @@ export default function TimedExam() {
   const [timeLeft, setTimeLeft] = useState(EXAM_DURATION_MINUTES * 60);
   const endTimeRef = useRef<number | null>(null);
   const resultStoredRef = useRef(false);
-  const resultsRecordedRef = useRef(false);
-  const { user, profile } = useAuth();
-  const { count, paid, hasAccess, requiresSignup, freeLimit, increment } = useQuizAccess(user, profile);
+  const { user, profile, profileLoading } = useAuth();
+  const { count, paid, ready, hasAccess, requiresSignup, freeLimit, consumeAttempt } = useQuizAccess(
+    user,
+    profile,
+    profileLoading,
+  );
   const [showPaywall, setShowPaywall] = useState(false);
   const [showSignupPrompt, setShowSignupPrompt] = useState(false);
+  const [accessGranted, setAccessGranted] = useState(false);
+  const [accessChecked, setAccessChecked] = useState(false);
   const pathname = usePathname();
   const nextUrl = useMemo(() => encodeURIComponent(pathname), [pathname]);
 
   const initExam = useCallback(() => {
-    if (!hasAccess) {
-      setShowPaywall(true);
-      return;
-    }
+    setAccessGranted(false);
+    setAccessChecked(false);
     const selected = selectExamQuestions();
     setQuestions(selected);
     setCurrentIndex(0);
@@ -53,11 +56,10 @@ export default function TimedExam() {
     setTimeLeft(EXAM_DURATION_MINUTES * 60);
     endTimeRef.current = Date.now() + EXAM_DURATION_MINUTES * 60 * 1000;
     resultStoredRef.current = false;
-    resultsRecordedRef.current = false;
     setState("playing");
     setShowPaywall(false);
     setShowSignupPrompt(false);
-  }, [hasAccess]);
+  }, []);
 
   // questions are initialized synchronously to avoid a blank render
 
@@ -187,16 +189,40 @@ export default function TimedExam() {
   }, [state, user, finalScore, questions, answers]);
 
   useEffect(() => {
-    if (state !== "results" && state !== "timeUp") return;
-    if (resultsRecordedRef.current) return;
-    if (paid) return;
-    resultsRecordedRef.current = true;
-    const nextCount = count + 1;
-    increment();
-    if (!user && nextCount >= 1) {
+    if (!ready || state !== "playing") return;
+    if (paid) {
+      setAccessGranted(true);
+      setAccessChecked(true);
+      return;
+    }
+    if (accessChecked) return;
+    if (!hasAccess) {
+      setShowPaywall(true);
+      setAccessChecked(true);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      const ok = await consumeAttempt();
+      if (cancelled) return;
+      if (ok) {
+        setAccessGranted(true);
+      } else {
+        setShowPaywall(true);
+      }
+      setAccessChecked(true);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [ready, state, accessChecked, paid, hasAccess, consumeAttempt]);
+
+  useEffect(() => {
+    if ((state !== "results" && state !== "timeUp") || paid) return;
+    if (!user && count >= 1) {
       setShowSignupPrompt(true);
     }
-  }, [state, count, freeLimit, increment, user, paid]);
+  }, [state, count, user, paid]);
 
   const paymentLink = buildStripePaymentLink(user);
 
@@ -204,7 +230,15 @@ export default function TimedExam() {
     return null;
   }
 
-  if (!hasAccess && state === "playing") {
+  if (!ready) {
+    return null;
+  }
+
+  if (state === "playing" && !accessChecked) {
+    return null;
+  }
+
+  if (state === "playing" && !accessGranted) {
     return (
       <>
         {requiresSignup ? (

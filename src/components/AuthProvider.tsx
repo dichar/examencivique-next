@@ -20,6 +20,7 @@ type AuthContextValue = {
   user: User | null;
   session: Session | null;
   profile: Profile | null;
+  profileLoading: boolean;
   loading: boolean;
   signOut: () => Promise<void>;
   refreshUser: () => Promise<User | null>;
@@ -32,6 +33,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [profileLoading, setProfileLoading] = useState(false);
   const [loading, setLoading] = useState(true);
   const refreshUserInFlight = useRef<Promise<User | null> | null>(null);
 
@@ -40,8 +42,10 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
       const targetId = userId ?? user?.id;
       if (!targetId) {
         setProfile(null);
+        setProfileLoading(false);
         return null;
       }
+      setProfileLoading(true);
       const { data, error } = await supabase
         .from("profiles")
         .select(
@@ -49,8 +53,12 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         )
         .eq("id", targetId)
         .maybeSingle();
-      if (error) return null;
+      if (error) {
+        setProfileLoading(false);
+        return null;
+      }
       setProfile(data ?? null);
+      setProfileLoading(false);
       return data ?? null;
     },
     [user?.id],
@@ -84,6 +92,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         refreshProfile(nextSession.user.id);
       } else {
         setProfile(null);
+        setProfileLoading(false);
       }
       setLoading(false);
     });
@@ -99,6 +108,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
       user,
       session,
       profile,
+      profileLoading,
       loading,
       signOut: async () => {
         await supabase.auth.signOut();
@@ -127,7 +137,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
       },
       refreshProfile,
     }),
-    [user, session, profile, loading, refreshProfile],
+    [user, session, profile, profileLoading, loading, refreshProfile],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

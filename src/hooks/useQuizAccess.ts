@@ -9,11 +9,23 @@ const FREE_LIMIT = 2;
 const ANON_LIMIT = 1;
 const COUNT_KEY = "examencivique.quizCount.total";
 
-export const useQuizAccess = (user: User | null, profile: Profile | null) => {
-  const [count, setCount] = useState(0);
+export const useQuizAccess = (user: User | null, profile: Profile | null, profileLoading = false) => {
+  const [count, setCount] = useState(() => {
+    if (typeof window === "undefined") return 0;
+    try {
+      return Number.parseInt(localStorage.getItem(COUNT_KEY) || "0", 10);
+    } catch {
+      return 0;
+    }
+  });
   const [paid, setPaid] = useState(false);
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
+    if (profileLoading) {
+      setReady(false);
+      return;
+    }
     let localCount = 0;
     try {
       localCount = Number.parseInt(localStorage.getItem(COUNT_KEY) || "0", 10);
@@ -43,7 +55,8 @@ export const useQuizAccess = (user: User | null, profile: Profile | null) => {
     }
     setCount(effectiveCount);
     setPaid(Boolean(user) && isPaidActive);
-  }, [user, profile]);
+    setReady(true);
+  }, [user, profile, profileLoading]);
 
   const requiresSignup = useMemo(() => !user && !paid && count >= ANON_LIMIT, [user, paid, count]);
   const hasAccess = useMemo(() => {
@@ -51,32 +64,34 @@ export const useQuizAccess = (user: User | null, profile: Profile | null) => {
     return user ? count < FREE_LIMIT : count < ANON_LIMIT;
   }, [paid, user, count]);
 
-  const increment = useCallback(async () => {
-    if (paid) return;
+  const consumeAttempt = useCallback(async () => {
+    if (paid) return true;
+    const limit = user ? FREE_LIMIT : ANON_LIMIT;
+    if (count >= limit) return false;
     const next = count + 1;
     setCount(next);
-    if (!user) {
-      try {
-        localStorage.setItem(COUNT_KEY, String(next));
-      } catch {
-        // ignore
-      }
-      return;
+    try {
+      localStorage.setItem(COUNT_KEY, String(next));
+    } catch {
+      // ignore
     }
+    if (!user) return true;
 
     try {
       await supabase.from("profiles").update({ free_quiz_used: next }).eq("id", user.id);
     } catch {
       // ignore
     }
+    return true;
   }, [count, paid, user]);
 
   return {
     count,
     paid,
+    ready,
     hasAccess,
     requiresSignup,
     freeLimit: user ? FREE_LIMIT : ANON_LIMIT,
-    increment,
+    consumeAttempt,
   };
 };
