@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Shield, FileText, BookOpen, HelpCircle, Scale, Heart, History, Facebook, Twitter, Instagram, Youtube, Linkedin } from "lucide-react";
+import { Shield, FileText, BookOpen, HelpCircle, Scale, BarChart3, Heart, History, Facebook, Twitter, Instagram, Youtube, Linkedin } from "lucide-react";
 import { SUPPORT_EMAIL } from "@/lib/constants";
 
 export default function Footer() {
@@ -64,6 +64,15 @@ export default function Footer() {
                 <Link href="/comparatif" className="text-sm text-background/70 hover:text-background transition-colors inline-flex items-center gap-2">
                   <Scale className="w-4 h-4" />
                   OFII vs Naturalisation
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/comparatif-sites-examen-civique-2026"
+                  className="text-sm text-background/70 hover:text-background transition-colors inline-flex items-center gap-2"
+                >
+                  <BarChart3 className="w-4 h-4" />
+                  Comparatif plateformes 2026
                 </Link>
               </li>
             </ul>

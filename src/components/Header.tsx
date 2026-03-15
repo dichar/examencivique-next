@@ -15,7 +15,8 @@ import {
   Newspaper,
   Target,
   User,
-  ChevronDown
+  ChevronDown,
+  BarChart3
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -40,6 +41,7 @@ const blogLink = { href: "/blog", label: "Blog", icon: Newspaper };
 const resourceLinks = [
   { href: "/questions", label: "Questions", icon: FileText },
   { href: "/modules-entrainement", label: "Modules", icon: BookOpen },
+  { href: "/comparatif-sites-examen-civique-2026", label: "Comparatif plateformes 2026", icon: BarChart3 },
   { href: "/faq", label: "FAQ", icon: HelpCircle },
   { href: "/a-propos", label: "À propos", icon: Info },
 ];
